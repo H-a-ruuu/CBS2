@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-accent="terracotta">
+<head>
+ <meta charset="UTF-8" />
+ <!-- interactive-widget=resizes-content 메타태그로 모바일 키보드 뷰포트 밀림 방지 -->
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+ <title>콜봄 AI · Kolbom AI</title>
+ <!-- Tailwind CSS CDN -->
+ <script src="https://cdn.tailwindcss.com"></script>
+ <!-- Lucide Icons CDN -->
+ <script src="https://unpkg.com/lucide@latest"></script>
+ <style>
+ @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+ :root[data-theme="light"] {
+ --bg: #F2F2F2;
+ --card: #EAE4D5;
+ --border: #B6B09F;
+ --ink: #000000;
+ --muted: #6b665c;
+ --fill-muted: rgba(182, 176, 159, 0.28);
+ }
+ :root[data-theme="dark"] {
+ --bg: #1C1A17;
+ --card: #2A2620;
+ --border: #4A453D;
+ --ink: #F2F2F2;
+ --muted: #a39c8f;
+ --fill-muted: rgba(74, 69, 61, 0.6);
+ }
+
+ :root[data-accent="terracotta"] { --accent: #C1694F; --accent-text: #ffffff; }
+ :root[data-accent="forest"] { --accent: #4A5D45; --accent-text: #ffffff; }
+ :root[data-accent="maroon"] { --accent: #7B3F3F; --accent-text: #ffffff; }
+ :root[data-accent="mustard"] { --accent: #C9A227; --accent-text: #1C1A17; }
+ :root[data-accent="dustyrose"] { --accent: #C08A7D; --accent-text: #1C1A17; }
+ :root[data-accent="indigo"] { --accent: #3B4A6B; --accent-text: #ffffff; }
+ :root[data-accent="cognac"] { --accent: #9C6B3E; --accent-text: #ffffff; }
+ :root[data-accent="slate"] { --accent: #5C6B73; --accent-text: #ffffff; }
+
+ * {
+ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+ -webkit-tap-highlight-color: transparent;
+ letter-spacing: -0.02em;
+ }
+ html, body {
+ height: 100%;
+ overscroll-behavior-y: none;
+ }
+ ::-webkit-scrollbar {
+ width: 4px;
+ height: 4px;
+ }
+ ::-webkit-scrollbar-track {
+ background: transparent;
+ }
+ ::-webkit-scrollbar-thumb {
+ background: #B6B09F;
+ border-radius: 9999px;
+ }
+ </style>
+</head>
+<body class="bg-[var(--bg)] text-[var(--ink)] min-h-screen flex flex-col antialiased transition-colors duration-300 selection:bg-[var(--border)] selection:text-[var(--ink)]">
+
+ <!-- ================= 1. 레이아웃: 데스크톱 사이드바 + 모바일 헤더 ================= -->
+ <div class="flex flex-1 min-h-screen">
+
+ <aside id="app-sidebar" class="hidden sm:flex flex-col items-center w-16 shrink-0 bg-[var(--card)] border-r border-[var(--border)] py-4 gap-3">
+ <button onclick="navigate('dashboard')" class="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-text)] flex items-center justify-center font-black text-sm tracking-wider mb-2" title="콜봄 AI">
+ K
+ </button>
+ <button onclick="navigate('dashboard')" id="sidebar-btn-dashboard" title="대시보드" class="w-9 h-9 rounded-xl flex items-center justify-center transition bg-[var(--accent)] text-[var(--accent-text)]">
+ <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+ </button>
+ <button onclick="navigate('characters')" id="sidebar-btn-characters" title="캐릭터 피드" class="w-9 h-9 rounded-xl flex items-center justify-center transition text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--fill-muted)]">
+ <i data-lucide="users" class="w-4 h-4"></i>
+ </button>
+ <button onclick="navigate('personas')" id="sidebar-btn-personas" title="내 페르소나" class="w-9 h-9 rounded-xl flex items-center justify-center transition text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--fill-muted)]">
+ <i data-lucide="user-cog" class="w-4 h-4"></i>
+ </button>
+ <button onclick="navigate('chats')" id="sidebar-btn-chats" title="채팅 목록" class="w-9 h-9 rounded-xl flex items-center justify-center transition text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--fill-muted)]">
+ <i data-lucide="message-circle" class="w-4 h-4"></i>
+ </button>
+ <div class="flex-1"></div>
+ <button onclick="navigate('create')" title="새 캐릭터" class="w-9 h-9 rounded-xl bg-[var(--accent)] text-[var(--accent-text)] flex items-center justify-center hover:opacity-90 transition">
+ <i data-lucide="plus" class="w-4 h-4"></i>
+ </button>
+ </aside>
+
+ <div class="flex-1 flex flex-col min-w-0">
+
+ <header id="global-header" class="sm:hidden sticky top-0 z-40 bg-[var(--bg)]/90 backdrop-blur-md border-b border-[var(--border)]/30 px-4 py-3.5 transition-colors duration-300">
+ <div class="flex items-center justify-between">
+ <button onclick="navigate('dashboard')" class="flex items-center gap-2.5 group">
+ <div class="w-8 h-8 rounded-lg bg-[var(--accent)] text-[var(--accent-text)] flex items-center justify-center font-black text-sm tracking-wider">
+ K
+ </div>
+ <div class="text-left">
+ <span class="font-extrabold text-sm tracking-tight text-[var(--ink)] block leading-none">콜봄 AI</span>
+ <span class="text-[9px] text-[var(--muted)] font-medium tracking-widest uppercase block mt-0.5">STUDIO</span>
+ </div>
+ </button>
+
+ <button onclick="navigate('create')" class="px-3.5 py-2 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+ <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+ <span>새 캐릭터</span>
+ </button>
+ </div>
+ </header>
+
+ <!-- ================= 2. 뷰 컨테이너 ================= -->
+ <main class="flex-1 flex flex-col pb-24 sm:pb-12" id="app-container">
+
+ <!-- (VIEW 1) 메인 대시보드 -->
+ <div id="view-dashboard" class="p-4 sm:p-8 max-w-5xl mx-auto w-full space-y-6">
+ <section class="bg-[var(--card)]/50 border border-[var(--border)]/30 rounded-3xl p-6 sm:p-7 transition-colors">
+ <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+ <div class="flex items-center gap-4">
+ <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-[var(--card)] border border-[var(--border)]/40 flex items-center justify-center text-xl font-bold text-[var(--ink)] shadow-sm shrink-0">
+ 👑
+ </div>
+ <div>
+ <div class="flex items-center gap-2">
+ <h2 id="dash-user-nickname" class="text-xl font-extrabold text-[var(--ink)] tracking-tight">주인님</h2>
+ <button onclick="openNicknameModal()" class="text-xs text-[var(--muted)] hover:text-[var(--ink)] flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-[var(--card)] transition font-medium">
+ <i data-lucide="edit-3" class="w-3 h-3"></i>
+ <span>수정</span>
+ </button>
+ <button onclick="openThemeModal()" class="text-xs text-[var(--muted)] hover:text-[var(--ink)] flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-[var(--card)] transition font-medium">
+ <i data-lucide="palette" class="w-3 h-3"></i>
+ <span>테마</span>
+ </button>
+ </div>
+ <p class="text-xs text-[var(--muted)] mt-1">등록된 API: <span id="dash-registered-models-count" class="font-mono text-[var(--ink)] font-bold">0개</span></p>
+ </div>
+ </div>
+
+ <div class="flex items-center justify-between sm:justify-start gap-5 bg-[var(--bg)] border border-[var(--border)]/30 px-5 py-3.5 rounded-2xl">
+ <div>
+ <span class="text-[10px] text-[var(--muted)] font-bold tracking-widest uppercase block">전체 누적 청구 요금</span>
+ <div class="text-2xl font-black text-[var(--ink)] mt-0.5 font-mono tracking-tight">
+ <span id="dash-total-cost-usd">$0.0000</span>
+ </div>
+ <div class="text-[11px] text-[var(--muted)] mt-0.5 font-mono">
+ 총 <span id="dash-total-calls" class="font-bold text-[var(--ink)] ">0</span>회 · <span id="dash-total-tokens" class="font-bold text-[var(--ink)] ">0</span> 토큰
+ </div>
+ </div>
+ <button onclick="openApiModelModal()" class="px-3.5 py-2 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold text-xs rounded-xl transition flex items-center gap-1.5 shrink-0 shadow-sm">
+ <i data-lucide="key" class="w-3.5 h-3.5"></i>
+ <span>+ API 등록</span>
+ </button>
+ </div>
+ </div>
+ </section>
+
+ <section class="space-y-3">
+ <div class="flex justify-between items-center">
+ <h3 class="text-xs font-bold text-[var(--ink)] uppercase tracking-wider flex items-center gap-1.5">
+ <i data-lucide="layers" class="w-3.5 h-3.5 text-[var(--muted)]"></i>
+ API 모델별 누적 상세 ($)
+ </h3>
+ </div>
+ <div id="dash-models-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5"></div>
+ </section>
+ </div>
+
+ <!-- (VIEW 2) 캐릭터 목록 피드 -->
+ <div id="view-characters" class="hidden p-3.5 sm:p-8 max-w-6xl mx-auto w-full space-y-4 sm:space-y-6">
+ <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+ <div>
+ <h1 class="text-xl sm:text-2xl font-black text-[var(--ink)] tracking-tight">캐릭터 탐색</h1>
+ <p class="text-xs text-[var(--muted)] mt-0.5">원하는 캐릭터를 골라 프라이빗 1:1 대화를 나눠보세요.</p>
+ </div>
+
+ <div class="flex items-center justify-between sm:justify-end gap-2.5 w-full sm:w-auto">
+ <div class="flex items-center bg-[var(--card)]/60 p-1 rounded-xl border border-[var(--border)]/20 shrink-0">
+ <button onclick="setGridCols(2)" id="btn-col-2" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition bg-[var(--bg)] text-[var(--ink)] shadow-sm">2열</button>
+ <button onclick="setGridCols(3)" id="btn-col-3" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition text-[var(--muted)]">3열</button>
+ <button onclick="setGridCols(4)" id="btn-col-4" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition text-[var(--muted)]">4열</button>
+ </div>
+
+ <div class="relative flex-1 sm:w-60">
+ <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--muted)]"></i>
+ <input
+ type="text"
+ id="char-search-input"
+ oninput="renderCharacterFeed()"
+ placeholder="캐릭터 검색..."
+ class="bg-[var(--bg)] border border-[var(--border)]/30 text-[var(--ink)] rounded-xl pl-8 pr-3 py-1.5 text-xs w-full focus:outline-none focus:border-[var(--accent)] transition placeholder:text-[var(--muted)]"
+ />
+ </div>
+ </div>
+ </div>
+
+ <div id="characters-grid" class="grid grid-cols-2 gap-3 sm:gap-5 pt-1"></div>
+ </div>
+
+ <!-- (VIEW 3) 새 캐릭터 등록 페이지 -->
+ <div id="view-create" class="hidden p-4 sm:p-8 max-w-2xl mx-auto w-full space-y-6">
+ <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]/30 ">
+ <div>
+ <h1 class="text-xl font-extrabold text-[var(--ink)] ">새 캐릭터 등록</h1>
+ <p class="text-xs text-[var(--muted)] mt-0.5">새로운 페르소나와 세계관을 가진 AI 캐릭터를 만듭니다.</p>
+ </div>
+ <div class="flex items-center gap-2">
+ <button type="button" onclick="saveCharacterDraft()" class="px-3 py-1.5 text-xs font-bold rounded-xl border border-[var(--border)]/40 bg-[var(--card)]/50 text-[var(--ink)] hover:border-[var(--accent)] transition flex items-center gap-1">
+ <i data-lucide="save" class="w-3.5 h-3.5 text-[var(--muted)]"></i>
+ <span>임시저장</span>
+ </button>
+ <button onclick="navigate('characters')" class="text-xs text-[var(--muted)] hover:text-[var(--ink)] transition ml-1">← 돌아가기</button>
+ </div>
+ </div>
+
+ <div id="draft-alert-banner" class="hidden p-3 rounded-2xl bg-[var(--card)] border border-[var(--border)]/30 flex items-center justify-between">
+ <div class="flex items-center gap-2 text-xs text-[var(--ink)] ">
+ <i data-lucide="info" class="w-4 h-4 text-[var(--muted)]"></i>
+ <span>작성 중이던 임시저장 내용이 있습니다.</span>
+ </div>
+ <div class="flex gap-1.5">
+ <button onclick="loadCharacterDraft()" class="px-2.5 py-1 text-[11px] font-bold bg-[var(--accent)] text-[var(--accent-text)] rounded-lg">불러오기</button>
+ <button onclick="clearCharacterDraft()" class="px-2.5 py-1 text-[11px] text-[var(--muted)] hover:text-rose-500 rounded-lg">삭제</button>
+ </div>
+ </div>
+
+ <form onsubmit="handleCreateCharacter(event)" class="space-y-4 bg-[var(--card)]/30 p-5 sm:p-6 rounded-3xl border border-[var(--border)]/30 ">
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 1. 캐릭터 이름 <span class="text-rose-500">*</span>
+ </label>
+ <input
+ type="text"
+ id="create-name"
+ required
+ placeholder="예: 까칠한 선배 강서준, 엘프 마법사"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 프로필 사진 업로드 <span class="text-[10px] text-[var(--muted)] font-normal">(선택 · 미업로드 시 기본 아바타)</span>
+ </label>
+ <div class="flex items-center gap-4">
+ <div id="create-avatar-preview" class="w-16 aspect-[2/3] rounded-xl bg-[var(--card)] border border-[var(--border)]/30 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer" onclick="openLightbox(document.getElementById('preview-img').src)">
+ <img id="preview-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=kolbom_default" class="w-full h-full object-cover" />
+ </div>
+ <div class="flex-1">
+ <input
+ type="file"
+ id="create-avatar-file"
+ accept="image/*"
+ onchange="handleImageUpload(event, 'character')"
+ class="block w-full text-xs text-[var(--muted)] file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[var(--accent)] file:text-[var(--accent-text)] hover:file:opacity-90 cursor-pointer"
+ />
+ <span class="text-[10px] text-[var(--muted)] block mt-1">2:3 비율 세로형 이미지를 추천합니다.</span>
+ </div>
+ </div>
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 2. 한 줄 소개 <span class="text-[10px] text-[var(--muted)] font-normal">(선택)</span>
+ </label>
+ <input
+ type="text"
+ id="create-intro"
+ placeholder="목록 카드에 노출될 매력적인 요약 한마디"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 3. 상세 시스템 프롬프트 (성격, 어투, 세계관 지침) <span class="text-rose-500">*</span>
+ </label>
+ <textarea
+ id="create-prompt"
+ required
+ rows="6"
+ placeholder="[캐릭터 설정]&#10;- 어투: 반말, 츤데레 틱틱거리는 말투&#10;- 지침: 카톡 대화하듯 짧고 자연스럽게 답할 것"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] font-mono leading-relaxed"
+ ></textarea>
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 4. 시작설정 이름 <span class="text-rose-500">*</span>
+ </label>
+ <input
+ type="text"
+ id="create-start-title"
+ required
+ placeholder="예: 기본 루트, 비 내리는 날의 도서관"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 5. 프롤로그 (첫인사 메시지) <span class="text-rose-500">*</span>
+ </label>
+ <textarea
+ id="create-greeting"
+ required
+ rows="2"
+ placeholder="채팅방 입장 시 캐릭터가 처음 보낼 선톡 메시지"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] resize-none"
+ ></textarea>
+ </div>
+
+ <div>
+ <div class="flex items-center justify-between mb-1.5">
+ <label class="block text-xs font-bold text-[var(--ink)] ">
+ 6. 시작 상황 <span class="text-[10px] text-[var(--muted)] font-normal">(선택)</span>
+ </label>
+ <span class="text-[10px] text-[var(--muted)]">🔒 미공개 설정</span>
+ </div>
+ <textarea
+ id="create-start-context"
+ rows="3"
+ placeholder="AI에게만 백그라운드로 주입되는 초기 상황 디렉팅"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] font-mono leading-relaxed"
+ ></textarea>
+ </div>
+
+ <button
+ type="submit"
+ class="w-full py-3.5 bg-[var(--accent)] hover:opacity-90 font-bold text-xs text-[var(--accent-text)] rounded-xl transition shadow-sm mt-2"
+ >
+ 캐릭터 생성 및 등록 완료
+ </button>
+ </form>
+ </div>
+
+ <!-- (VIEW 4) 내 페르소나 설정 페이지 -->
+ <div id="view-personas" class="hidden p-4 sm:p-8 max-w-4xl mx-auto w-full space-y-6">
+ <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]/30 ">
+ <div>
+ <h1 class="text-2xl font-black text-[var(--ink)] tracking-tight">내 페르소나 보관함</h1>
+ <p class="text-xs text-[var(--muted)] mt-1">채팅방에서 적용할 나만의 프로필과 역할을 관리합니다.</p>
+ </div>
+ <button onclick="openPersonaModal()" class="px-3.5 py-2 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-sm">
+ <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+ <span>새 페르소나 추가</span>
+ </button>
+ </div>
+ <div id="personas-list-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+ </div>
+
+ <!-- (VIEW 5) 진행 중인 채팅 목록 -->
+ <div id="view-chats" class="hidden p-4 sm:p-8 max-w-4xl mx-auto w-full space-y-5">
+ <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border)]/30 ">
+ <div>
+ <h1 class="text-2xl font-black text-[var(--ink)] tracking-tight">진행 중인 채팅</h1>
+ <p class="text-xs text-[var(--muted)] mt-1">폴더를 만들어 대화방을 체계적으로 분류하고 관리하세요.</p>
+ </div>
+ <div class="flex items-center gap-2">
+ <button onclick="openCreateFolderModal()" class="px-3 py-1.5 bg-[var(--card)] border border-[var(--border)]/30 text-[var(--ink)] text-xs font-bold rounded-xl transition flex items-center gap-1 hover:border-[var(--accent)] ">
+ <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-[var(--muted)]"></i>
+ <span>+ 새 폴더</span>
+ </button>
+ <button onclick="navigate('characters')" class="px-3 py-1.5 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition shadow-sm">
+ + 새 대화 시작
+ </button>
+ </div>
+ </div>
+
+ <div id="chat-folder-tabs" class="flex items-center gap-1.5 overflow-x-auto pb-1"></div>
+ <div id="active-chats-list" class="space-y-2"></div>
+ </div>
+
+ <!-- (VIEW 6) 1:1 카카오톡 UI 채팅방 (상/하단 절대 고정 & 모바일 밀림 방지) -->
+ <div id="view-chatroom" class="hidden fixed inset-0 z-50 flex justify-center items-center bg-black/70 backdrop-blur-sm sm:static sm:z-auto sm:bg-transparent sm:flex-1 sm:h-screen sm:py-4 overflow-hidden">
+ <div id="kakao-container" class="w-full h-full sm:max-w-md sm:h-full sm:rounded-3xl flex flex-col bg-[#A0C0D6] shadow-2xl relative overflow-hidden transition-colors duration-200">
+ 
+ <!-- 카톡 상단 고정 헤더 (화면 스크롤해도 절대 움직이지 않음) -->
+ <div id="kakao-header" class="flex items-center justify-between px-3.5 py-2.5 border-b border-black/5 bg-[#A0C0D6] select-none z-20 shrink-0 transition-colors duration-200">
+ <div class="flex items-center gap-2 overflow-hidden">
+ <button onclick="navigate('chats')" class="p-1.5 hover:bg-black/10 rounded-lg transition text-slate-800" id="kakao-back-btn">
+ <i data-lucide="chevron-left" class="w-5 h-5"></i>
+ </button>
+ <div class="overflow-hidden">
+ <div class="flex items-center gap-1.5">
+ <h2 id="room-char-name" class="font-bold text-sm leading-tight text-slate-900 truncate">캐릭터</h2>
+ <button onclick="editRoomTitleFromHeader()" id="room-session-tag-btn" title="대화방 이름 변경" class="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded font-mono transition">
+ <span id="room-session-tag">대화방</span>
+ <i data-lucide="edit-2" class="w-2.5 h-2.5 opacity-60"></i>
+ </button>
+ </div>
+ 
+ <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
+ <select id="room-persona-select" onchange="changeRoomPersona(this.value)" class="text-[10px] font-bold border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
+ </select>
+ <select id="room-model-select" onchange="changeRoomModel(this.value)" class="text-[10px] font-bold border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer">
+ </select>
+ </div>
+ </div>
+ </div>
+
+ <div class="flex items-center gap-1.5 shrink-0">
+ <button onclick="toggleKakaoTheme()" id="kakao-theme-btn" class="px-2.5 py-1 text-[11px] font-bold rounded-lg transition flex items-center gap-1">
+ <i data-lucide="moon" id="kakao-theme-icon" class="w-3.5 h-3.5"></i>
+ <span id="theme-btn-text">다크</span>
+ </button>
+ <button onclick="deleteCurrentChatSession()" id="kakao-delete-btn" title="이 대화방 삭제" class="p-1.5 rounded-lg transition">
+ <i data-lucide="trash-2" class="w-4 h-4"></i>
+ </button>
+ </div>
+ </div>
+
+ <!-- 카톡 메시지 스크롤 영역 (헤더/입력창 사이에서만 독립 스크롤) -->
+ <div id="kakao-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5 text-sm overscroll-y-contain"></div>
+
+ <!-- 카톡 하단 고정 입력 바 (항상 하단에 밀착 고정) -->
+ <div id="kakao-input-bar" class="p-2.5 bg-white border-t border-slate-200 shrink-0 z-20 transition-colors duration-200">
+ <div class="flex items-end gap-2 max-w-full">
+ <textarea
+ id="chat-input"
+ rows="1"
+ onkeydown="handleChatKeyDown(event)"
+ placeholder="메시지 입력..."
+ class="flex-1 resize-none rounded-xl px-3.5 py-2.5 text-xs bg-slate-100 text-slate-900 focus:outline-none max-h-24 transition placeholder:text-slate-400"
+ ></textarea>
+ <button
+ id="send-btn"
+ onclick="sendMessage()"
+ class="px-4 py-2.5 bg-[#FEE500] text-slate-950 hover:bg-[#edd400] font-bold text-xs rounded-xl transition shrink-0 flex items-center justify-center shadow-sm disabled:opacity-50"
+ >
+ 전송
+ </button>
+ </div>
+ </div>
+
+ </div>
+ </div>
+
+ </main>
+
+ </div>
+ </div>
+
+ <!-- ================= 3. 모바일 하단 네비게이션 바 ================= -->
+ <nav id="mobile-bottom-nav" class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg)]/95 backdrop-blur-lg border-t border-[var(--border)]/30 px-2 py-1.5 flex justify-around items-center transition-all duration-300">
+ <button onclick="navigate('dashboard')" id="m-nav-dashboard" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--ink)] font-bold transition">
+ <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+ <span class="text-[10px]">대시보드</span>
+ </button>
+ <button onclick="navigate('characters')" id="m-nav-characters" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--muted)] hover:text-[var(--ink)] transition">
+ <i data-lucide="sparkles" class="w-5 h-5"></i>
+ <span class="text-[10px]">피드</span>
+ </button>
+ <button onclick="navigate('personas')" id="m-nav-personas" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--muted)] hover:text-[var(--ink)] transition">
+ <i data-lucide="user-cog" class="w-5 h-5"></i>
+ <span class="text-[10px]">페르소나</span>
+ </button>
+ <button onclick="navigate('chats')" id="m-nav-chats" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--muted)] hover:text-[var(--ink)] transition">
+ <i data-lucide="message-square" class="w-5 h-5"></i>
+ <span class="text-[10px]">채팅</span>
+ </button>
+ </nav>
+
+ <!-- ================= 4. 모달들 ================= -->
+
+ <!-- 4-0. 이미지 확대 라이트박스 모달 -->
+ <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 cursor-pointer" onclick="closeLightbox()">
+ <div class="relative max-w-lg max-h-[85vh] overflow-hidden rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
+ <img id="lightbox-img" src="" class="w-full h-full object-contain" />
+ <button onclick="closeLightbox()" class="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/90 text-[var(--ink)] rounded-full transition">
+ <i data-lucide="x" class="w-4 h-4"></i>
+ </button>
+ </div>
+ </div>
+
+ <!-- 4-1. 캐릭터 클릭 시 대화방 선택/새 방 생성 모달 -->
+ <div id="character-session-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <div class="flex justify-between items-center">
+ <div class="flex items-center gap-3">
+ <img id="session-modal-avatar" src="" class="w-10 aspect-[2/3] rounded-lg object-cover border border-[var(--border)]/30 cursor-pointer" onclick="openLightbox(this.src)" />
+ <div>
+ <h3 id="session-modal-name" class="text-sm font-bold text-[var(--ink)] ">캐릭터 이름</h3>
+ <span class="text-[10px] text-[var(--muted)]">대화 세션 관리</span>
+ </div>
+ </div>
+ <button onclick="closeCharacterSessionModal()" class="text-[var(--muted)] hover:text-[var(--ink)] "><i data-lucide="x" class="w-4 h-4"></i></button>
+ </div>
+
+ <div class="space-y-2">
+ <button onclick="startNewChatSession()" class="w-full py-2.5 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
+ <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
+ <span>+ 새로운 대화방 파기</span>
+ </button>
+ </div>
+
+ <div class="pt-2">
+ <span class="text-[11px] font-bold text-[var(--muted)] block mb-2">기존 대화방 이어하기</span>
+ <div id="session-modal-existing-list" class="space-y-1.5 max-h-52 overflow-y-auto pr-1"></div>
+ </div>
+ </div>
+ </div>
+
+ <!-- 4-2. 페르소나 등록 및 수정 모달 -->
+ <div id="persona-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+ <div class="flex justify-between items-center">
+ <h3 id="persona-modal-title" class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="user-check" class="w-4 h-4 text-[var(--muted)]"></i>
+ 새 페르소나 등록
+ </h3>
+ <button onclick="closePersonaModal()" class="text-[var(--muted)] hover:text-[var(--ink)] "><i data-lucide="x" class="w-4 h-4"></i></button>
+ </div>
+ 
+ <form onsubmit="handleSavePersona(event)" class="space-y-3.5">
+ <input type="hidden" id="edit-persona-id" value="" />
+ 
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">페르소나 이름 (채팅방 유저명) *</label>
+ <input
+ type="text"
+ id="persona-name"
+ required
+ placeholder="예: 후배 영희, 용사 카엘"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">
+ 페르소나 프로필 사진 <span class="text-[10px] text-[var(--muted)] font-normal">(1:1 비율)</span>
+ </label>
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 rounded-xl bg-[var(--card)] border border-[var(--border)]/30 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer" onclick="openLightbox(document.getElementById('persona-preview-img').src)">
+ <img id="persona-preview-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=user_default" class="w-full h-full object-cover" />
+ </div>
+ <div class="flex-1">
+ <input
+ type="file"
+ id="persona-avatar-file"
+ accept="image/*"
+ onchange="handleImageUpload(event, 'persona')"
+ class="block w-full text-xs text-[var(--muted)] file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-[var(--accent)] file:text-[var(--accent-text)] hover:file:opacity-90 cursor-pointer"
+ />
+ </div>
+ </div>
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">역할 요약</label>
+ <input
+ type="text"
+ id="persona-desc"
+ placeholder="예: 싹싹하지만 은근히 할 말 다 하는 후배"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">AI에게 주입할 내 설정 (프롬프트) *</label>
+ <textarea
+ id="persona-prompt"
+ required
+ rows="4"
+ placeholder="[유저 정보 설정]&#10;- 이름: ...&#10;- 어투 및 성격: 존댓말 사용, 상냥함"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-[var(--accent)] font-mono leading-relaxed"
+ ></textarea>
+ </div>
+
+ <div class="flex justify-end gap-2 pt-2">
+ <button type="button" onclick="closePersonaModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] ">취소</button>
+ <button type="submit" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition">
+ 저장
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- 4-3. 방 이름 수정 모달 -->
+ <div id="rename-session-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="edit-2" class="w-4 h-4 text-[var(--muted)]"></i>
+ 대화방 이름 변경
+ </h3>
+ <input type="hidden" id="rename-session-id" />
+ <input
+ type="text"
+ id="rename-session-input"
+ placeholder="예: 고백 루트, 서브스토리, 현대AU"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ <div class="flex justify-end gap-2 pt-2">
+ <button onclick="closeRenameSessionModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] ">취소</button>
+ <button onclick="saveRenamedSession()" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition">
+ 변경 완료
+ </button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 4-4. 새 폴더 생성 모달 -->
+ <div id="create-folder-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="folder-plus" class="w-4 h-4 text-[var(--muted)]"></i>
+ 새 폴더 생성
+ </h3>
+ <input
+ type="text"
+ id="create-folder-name-input"
+ placeholder="예: 메인 스토리, IF 외전, AU 모음"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ <div class="flex justify-end gap-2 pt-2">
+ <button onclick="closeCreateFolderModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] ">취소</button>
+ <button onclick="saveNewFolder()" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition">
+ 생성하기
+ </button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 4-5. 채팅방 폴더 이동 모달 -->
+ <div id="move-folder-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="folder-input" class="w-4 h-4 text-[var(--muted)]"></i>
+ 대화방 폴더 이동
+ </h3>
+ <input type="hidden" id="move-session-id" />
+ <div id="move-folder-options-list" class="space-y-1.5 max-h-56 overflow-y-auto"></div>
+ <div class="flex justify-end pt-2">
+ <button onclick="closeMoveFolderModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] ">닫기</button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 4-6. API Key 등록 모달 -->
+ <div id="api-model-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-md space-y-4 shadow-2xl">
+ <div class="flex justify-between items-center">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="key" class="w-4 h-4 text-[var(--muted)]"></i>
+ 개인 API Key 등록
+ </h3>
+ <button onclick="closeApiModelModal()" class="text-[var(--muted)] hover:text-[var(--ink)] "><i data-lucide="x" class="w-4 h-4"></i></button>
+ </div>
+ 
+ <form onsubmit="handleSaveSimpleApiKey(event)" class="space-y-3.5">
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">식별 라벨 (이름) *</label>
+ <input
+ type="text"
+ id="simple-model-label"
+ required
+ placeholder="예: 내 메인 API Key, 서브 계정"
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">API Key *</label>
+ <input
+ type="password"
+ id="simple-model-key"
+ required
+ placeholder="sk-... 또는 AIzaSy..."
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] font-mono"
+ />
+ </div>
+
+ <div class="flex justify-end gap-2 pt-2">
+ <button type="button" onclick="closeApiModelModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] font-medium">취소</button>
+ <button type="submit" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition shadow-sm">
+ 등록하기
+ </button>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ <!-- 4-7. 닉네임 수정 모달 -->
+ <div id="nickname-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="user" class="w-4 h-4 text-[var(--muted)]"></i>
+ 내 계정 닉네임 수정
+ </h3>
+ <input
+ type="text"
+ id="input-user-nickname"
+ placeholder="새 닉네임 입력..."
+ class="w-full bg-[var(--card)]/30 border border-[var(--border)]/30 text-[var(--ink)] rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] "
+ />
+ <div class="flex justify-end gap-2 pt-2">
+ <button onclick="closeNicknameModal()" class="px-4 py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)] ">취소</button>
+ <button onclick="saveUserNickname()" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition">
+ 변경 완료
+ </button>
+ </div>
+ </div>
+ </div>
+
+ <!-- 4-7b. 테마 선택 모달 -->
+ <div id="theme-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
+ <div class="flex justify-between items-center">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="palette" class="w-4 h-4 text-[var(--accent)]"></i>
+ 테마 설정
+ </h3>
+ <button onclick="closeThemeModal()" class="text-[var(--muted)] hover:text-[var(--ink)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-semibold text-[var(--muted)] mb-2">밝기 모드</label>
+ <div class="grid grid-cols-2 gap-2">
+ <button onclick="setAppTheme('light')" id="theme-mode-light-btn" class="py-2 text-xs font-bold rounded-xl border transition">라이트</button>
+ <button onclick="setAppTheme('dark')" id="theme-mode-dark-btn" class="py-2 text-xs font-bold rounded-xl border transition">다크</button>
+ </div>
+ </div>
+
+ <div>
+ <label class="block text-[11px] font-semibold text-[var(--muted)] mb-2">포인트 컬러</label>
+ <div id="accent-swatch-grid" class="grid grid-cols-4 gap-2"></div>
+ </div>
+
+ <div class="flex justify-end pt-2">
+ <button onclick="closeThemeModal()" class="px-4 py-2 text-xs bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] font-bold rounded-xl transition">확인</button>
+ </div>
+ </div>
+ </div>
+
+ <!-- ================= 5. 상태 관리 & 스크립트 ================= -->
+ <script>
+ const DEFAULT_FALLBACK_AVATAR = 'https://api.dicebear.com/7.x/bottts/svg?seed=kolbom_default';
+ let currentUploadedAvatarBase64 = '';
+ let currentPersonaAvatarBase64 = '';
+ let currentFeedGridCols = 2;
+
+ const MODEL_PRICING = {
+ 'gpt-4o-mini': { inputPer1M: 0.15, outputPer1M: 0.60, provider: 'openai', name: 'OpenAI GPT-4o-mini' },
+ 'gemini-1.5-flash': { inputPer1M: 0.075, outputPer1M: 0.30, provider: 'gemini', name: 'Google Gemini 1.5 Flash' },
+ 'mock-engine': { inputPer1M: 0.0, outputPer1M: 0.0, provider: 'mock', name: 'Mock Engine (시뮬레이션)' }
+ };
+
+ const DEFAULT_REGISTERED_MODELS = [
+ {
+ id: 'model-mock-1',
+ label: '무료 시뮬레이션 엔진',
+ modelKey: 'mock-engine',
+ apiKey: '',
+ stats: { calls: 0, inputTokens: 0, outputTokens: 0, costUSD: 0 }
+ }
+ ];
+
+ const DEFAULT_CHARACTERS = [
+ {
+ id: 'char-1',
+ name: '츤데레 선배 강서준',
+ avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=seojun',
+ intro: '맨날 틱틱거리면서도 과제나 밥은 꼬박꼬박 챙겨주는 선배',
+ author: '주인님',
+ startTitle: '기본 루트',
+ greeting: '야. 너 또 과제 안 하고 멍때리고 있지? 밥이나 먹으러 가자, 나와.',
+ startContext: '상대방과 10년 지기 소꿉친구이자 같은 학과 선후배 사이. 현재 점심시간 직전 동아리방 상황.',
+ systemPrompt: '너는 츤데레 대학교 과선배 강서준이다. 겉으로는 차갑고 툴툴거리지만 속으로는 상대를 몹시 아낀다. 카카오톡 메신저로 대화하듯 짧은 반말과 틱틱거리는 어투를 써라. 문장은 1~3문장 이내로 톡하듯 보낸다.'
+ }
+ ];
+
+ const DEFAULT_PERSONAS = [
+ {
+ id: 'persona-default',
+ name: '나 (기본)',
+ avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=user_default',
+ desc: '기본 페르소나',
+ prompt: '유저는 일반적인 사용자입니다. 편안하고 자연스럽게 대화합니다.'
+ },
+ {
+ id: 'persona-cute-junior',
+ name: '싹싹한 후배',
+ avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=junior',
+ desc: '선배를 잘 따르는 후배',
+ prompt: '유저는 상대 캐릭터를 잘 따르는 귀엽고 싹싹한 대학교 직속 후배입니다. 깍듯하지만 다정하게 존댓말을 사용합니다.'
+ }
+ ];
+
+ let currentView = 'dashboard';
+ let currentSessionId = null;
+ let selectedCharForSessionModal = null;
+ let selectedChatFolderFilter = 'all';
+ let isKakaoDark = false;
+
+ window.addEventListener('DOMContentLoaded', () => {
+ initStorage();
+ applyThemeSettings();
+ initVisualViewportHandler();
+ updateDashboardStats();
+ renderCharacterFeed();
+ renderPersonaList();
+ renderActiveChatsList();
+ checkCharacterDraft();
+ lucide.createIcons();
+ });
+
+ // 모바일 가상 키보드 높이 감지 및 고정 핸들러
+ function initVisualViewportHandler() {
+ if (window.visualViewport) {
+ window.visualViewport.addEventListener('resize', () => {
+ if (currentView === 'chatroom') {
+ const chatroomEl = document.getElementById('view-chatroom');
+ if (chatroomEl && window.innerWidth < 640) {
+ chatroomEl.style.height = `${window.visualViewport.height}px`;
+ scrollToBottom();
+ }
+ }
+ });
+ window.visualViewport.addEventListener('scroll', () => {
+ if (currentView === 'chatroom' && window.innerWidth < 640) {
+ window.scrollTo(0, 0); // 바깥 전체 뷰포트 스크롤 방지
+ }
+ });
+ }
+ }
+
+ function initStorage() {
+ if (!localStorage.getItem('user_profile_nickname')) {
+ localStorage.setItem('user_profile_nickname', '주인님');
+ }
+ if (!localStorage.getItem('user_registered_models')) {
+ localStorage.setItem('user_registered_models', JSON.stringify(DEFAULT_REGISTERED_MODELS));
+ }
+ if (!localStorage.getItem('crack_characters')) {
+ localStorage.setItem('crack_characters', JSON.stringify(DEFAULT_CHARACTERS));
+ }
+ if (!localStorage.getItem('user_personas')) {
+ localStorage.setItem('user_personas', JSON.stringify(DEFAULT_PERSONAS));
+ }
+ if (!localStorage.getItem('kolbom_chat_sessions')) {
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify([]));
+ }
+ if (!localStorage.getItem('kolbom_chat_folders')) {
+ localStorage.setItem('kolbom_chat_folders', JSON.stringify([
+ { id: 'folder-main', name: '메인 스토리' },
+ { id: 'folder-if', name: 'IF 외전' }
+ ]));
+ }
+ }
+
+ const THEME_ACCENTS = [
+ { id: 'terracotta', name: '테라코타', hex: '#C1694F' },
+ { id: 'forest', name: '포레스트 그린', hex: '#4A5D45' },
+ { id: 'maroon', name: '머룬 와인', hex: '#7B3F3F' },
+ { id: 'mustard', name: '머스터드', hex: '#C9A227' },
+ { id: 'dustyrose', name: '더스티 로즈', hex: '#C08A7D' },
+ { id: 'indigo', name: '딥 인디고', hex: '#3B4A6B' },
+ { id: 'cognac', name: '코냑 브라운', hex: '#9C6B3E' },
+ { id: 'slate', name: '슬레이트', hex: '#5C6B73' }
+ ];
+
+ function applyThemeSettings() {
+ const mode = localStorage.getItem('app_theme_mode') || 'light';
+ const accent = localStorage.getItem('app_accent_theme') || 'terracotta';
+ document.documentElement.setAttribute('data-theme', mode);
+ document.documentElement.setAttribute('data-accent', accent);
+ }
+
+ function setAppTheme(mode) {
+ localStorage.setItem('app_theme_mode', mode);
+ applyThemeSettings();
+ renderThemeModalState();
+ }
+
+ function setAccentTheme(id) {
+ localStorage.setItem('app_accent_theme', id);
+ applyThemeSettings();
+ renderThemeModalState();
+ }
+
+ function openThemeModal() {
+ renderThemeModalState();
+ document.getElementById('theme-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+ function closeThemeModal() {
+ document.getElementById('theme-modal').classList.add('hidden');
+ }
+
+ function renderThemeModalState() {
+ const mode = localStorage.getItem('app_theme_mode') || 'light';
+ const accent = localStorage.getItem('app_accent_theme') || 'terracotta';
+
+ const lightBtn = document.getElementById('theme-mode-light-btn');
+ const darkBtn = document.getElementById('theme-mode-dark-btn');
+ if (lightBtn && darkBtn) {
+ lightBtn.className = 'py-2 text-xs font-bold rounded-xl border transition ' + (mode === 'light' ? 'bg-[var(--accent)] text-[var(--accent-text)] border-[var(--accent)]' : 'border-[var(--border)] text-[var(--muted)] hover:text-[var(--ink)]');
+ darkBtn.className = 'py-2 text-xs font-bold rounded-xl border transition ' + (mode === 'dark' ? 'bg-[var(--accent)] text-[var(--accent-text)] border-[var(--accent)]' : 'border-[var(--border)] text-[var(--muted)] hover:text-[var(--ink)]');
+ }
+
+ const grid = document.getElementById('accent-swatch-grid');
+ if (grid) {
+ grid.innerHTML = THEME_ACCENTS.map(t => `
+ <button
+ onclick="setAccentTheme('${t.id}')"
+ title="${t.name}"
+ aria-label="${t.name} 테마 선택"
+ style="background:${t.hex}; height:36px; border-radius:8px; border:2px solid ${t.id === accent ? 'var(--ink)' : 'transparent'}; display:flex; align-items:center; justify-content:center;"
+ >
+ ${t.id === accent ? '<i data-lucide="check" class="w-3.5 h-3.5" style="color:#fff"></i>' : ''}
+ </button>
+ `).join('');
+ lucide.createIcons();
+ }
+ }
+
+ function openLightbox(src) {
+ if (!src) return;
+ document.getElementById('lightbox-img').src = src;
+ document.getElementById('lightbox-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeLightbox() {
+ document.getElementById('lightbox-modal').classList.add('hidden');
+ }
+
+ function setGridCols(cols) {
+ currentFeedGridCols = cols;
+ const grid = document.getElementById('characters-grid');
+ 
+ [2, 3, 4].forEach(c => {
+ const btn = document.getElementById(`btn-col-${c}`);
+ if (c === cols) {
+ btn.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg transition bg-[var(--bg)] text-[var(--ink)] shadow-sm';
+ } else {
+ btn.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg transition text-[var(--muted)] hover:text-[var(--ink)] ';
+ }
+ });
+
+ if (cols === 2) {
+ grid.className = 'grid grid-cols-2 gap-3 sm:gap-5 pt-1';
+ } else if (cols === 3) {
+ grid.className = 'grid grid-cols-3 gap-2.5 sm:gap-5 pt-1';
+ } else if (cols === 4) {
+ grid.className = 'grid grid-cols-4 gap-2 sm:gap-4 pt-1';
+ }
+ }
+
+ function navigate(viewName, params = {}) {
+ currentView = viewName;
+ const views = ['dashboard', 'characters', 'create', 'personas', 'chats', 'chatroom'];
+ views.forEach(v => {
+ const el = document.getElementById(`view-${v}`);
+ if (el) el.classList.add('hidden');
+ });
+
+ const targetEl = document.getElementById(`view-${viewName}`);
+ if (targetEl) targetEl.classList.remove('hidden');
+
+ const mBottomNav = document.getElementById('mobile-bottom-nav');
+ const globalHeader = document.getElementById('global-header');
+ 
+ if (viewName === 'chatroom') {
+ mBottomNav.classList.add('hidden');
+ if (window.innerWidth < 640) {
+ globalHeader.classList.add('hidden');
+ const chatroomEl = document.getElementById('view-chatroom');
+ if (window.visualViewport) {
+ chatroomEl.style.height = `${window.visualViewport.height}px`;
+ }
+ }
+ } else {
+ mBottomNav.classList.remove('hidden');
+ globalHeader.classList.remove('hidden');
+ const chatroomEl = document.getElementById('view-chatroom');
+ if (chatroomEl) chatroomEl.style.height = '';
+ }
+
+ ['dashboard', 'characters', 'personas', 'chats'].forEach(tab => {
+ const btn = document.getElementById(`sidebar-btn-${tab}`);
+ if (btn) {
+ if (tab === viewName) {
+ btn.className = 'w-9 h-9 rounded-xl flex items-center justify-center transition bg-[var(--accent)] text-[var(--accent-text)]';
+ } else {
+ btn.className = 'w-9 h-9 rounded-xl flex items-center justify-center transition text-[var(--muted)] hover:text-[var(--ink)] hover:bg-[var(--fill-muted)]';
+ }
+ }
+ });
+
+ ['dashboard', 'characters', 'personas', 'chats'].forEach(tab => {
+ const mBtn = document.getElementById(`m-nav-${tab}`);
+ if (mBtn) {
+ if (tab === viewName) {
+ mBtn.className = 'flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--ink)] font-bold transition';
+ } else {
+ mBtn.className = 'flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--muted)] hover:text-[var(--ink)] transition';
+ }
+ }
+ });
+
+ if (viewName === 'dashboard') updateDashboardStats();
+ if (viewName === 'characters') renderCharacterFeed();
+ if (viewName === 'create') checkCharacterDraft();
+ if (viewName === 'personas') renderPersonaList();
+ if (viewName === 'chats') renderActiveChatsList();
+ if (viewName === 'chatroom' && params.sessionId) {
+ openChatRoom(params.sessionId);
+ }
+
+ window.scrollTo(0, 0);
+ lucide.createIcons();
+ }
+
+ function updateDashboardStats() {
+ const nickname = localStorage.getItem('user_profile_nickname') || '주인님';
+ document.getElementById('dash-user-nickname').innerText = nickname;
+
+ const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ document.getElementById('dash-registered-models-count').innerText = `${models.length}개`;
+
+ let totalCalls = 0;
+ let totalTokens = 0;
+ let totalCostUSD = 0;
+
+ models.forEach(m => {
+ const st = m.stats || { calls: 0, inputTokens: 0, outputTokens: 0, costUSD: 0 };
+ totalCalls += st.calls;
+ totalTokens += (st.inputTokens + st.outputTokens);
+ totalCostUSD += st.costUSD;
+ });
+
+ document.getElementById('dash-total-calls').innerText = totalCalls.toLocaleString();
+ document.getElementById('dash-total-tokens').innerText = totalTokens.toLocaleString();
+ document.getElementById('dash-total-cost-usd').innerText = `$${totalCostUSD.toFixed(4)}`;
+
+ const modelsGrid = document.getElementById('dash-models-grid');
+ modelsGrid.innerHTML = models.map(m => {
+ const p = MODEL_PRICING[m.modelKey] || { name: m.modelKey };
+ const st = m.stats || { calls: 0, inputTokens: 0, outputTokens: 0, costUSD: 0 };
+ const hasKey = m.apiKey && m.apiKey.length > 3;
+
+ return `
+ <div class="bg-[var(--bg)] border border-[var(--border)]/30 p-4 rounded-2xl flex flex-col justify-between space-y-3 shadow-sm">
+ <div>
+ <div class="flex items-start justify-between gap-2">
+ <div>
+ <h4 class="font-bold text-xs text-[var(--ink)] truncate">${escapeHtml(m.label)}</h4>
+ <span class="text-[10px] text-[var(--muted)] font-mono block mt-0.5">${p.name}</span>
+ </div>
+ <span class="text-[9px] px-2 py-0.5 rounded-full border font-bold ${
+ m.modelKey === 'mock-engine' ? 'bg-[var(--card)] text-[var(--ink)] border-[var(--border)]/30' :
+ hasKey ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'bg-rose-500/10 text-rose-500 border-rose-500/30'
+ }">
+ ${m.modelKey === 'mock-engine' ? 'Mock' : hasKey ? '연동됨' : 'Key 필요'}
+ </span>
+ </div>
+
+ <div class="mt-3 bg-[var(--card)]/30 border border-[var(--border)]/20 p-2.5 rounded-xl space-y-1 text-[11px]">
+ <div class="flex justify-between items-center">
+ <span class="text-[var(--muted)]">누적 요금:</span>
+ <span class="font-bold text-[var(--ink)] font-mono">$${(st.costUSD || 0).toFixed(4)}</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-[var(--muted)]">호출 수:</span>
+ <span class="font-mono text-[var(--ink)] ">${st.calls}회</span>
+ </div>
+ <div class="flex justify-between text-[10px]">
+ <span class="text-[var(--muted)]">토큰 (In/Out):</span>
+ <span class="font-mono text-[var(--muted)]">${(st.inputTokens || 0).toLocaleString()} / ${(st.outputTokens || 0).toLocaleString()}</span>
+ </div>
+ </div>
+ </div>
+
+ <div class="flex justify-end pt-1">
+ <button onclick="deleteRegisteredModel('${m.id}')" class="text-[11px] font-medium text-[var(--muted)] hover:text-rose-500 transition">삭제</button>
+ </div>
+ </div>
+ `;
+ }).join('');
+
+ lucide.createIcons();
+ }
+
+ function openApiModelModal() {
+ document.getElementById('simple-model-label').value = '';
+ document.getElementById('simple-model-key').value = '';
+ document.getElementById('api-model-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeApiModelModal() {
+ document.getElementById('api-model-modal').classList.add('hidden');
+ }
+
+ function handleSaveSimpleApiKey(e) {
+ e.preventDefault();
+ const label = document.getElementById('simple-model-label').value.trim();
+ const apiKey = document.getElementById('simple-model-key').value.trim();
+
+ let detectedModelKey = 'gpt-4o-mini';
+ if (apiKey.startsWith('AIzaSy')) {
+ detectedModelKey = 'gemini-1.5-flash';
+ }
+
+ const newModel = {
+ id: `model-${Date.now()}`,
+ label,
+ modelKey: detectedModelKey,
+ apiKey,
+ stats: { calls: 0, inputTokens: 0, outputTokens: 0, costUSD: 0 }
+ };
+
+ const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ models.push(newModel);
+ localStorage.setItem('user_registered_models', JSON.stringify(models));
+
+ closeApiModelModal();
+ updateDashboardStats();
+ alert(`'${label}' API Key가 성공적으로 등록되었습니다!`);
+ }
+
+ function deleteRegisteredModel(id) {
+ if (confirm('이 API 모델을 삭제할까요?')) {
+ let models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ models = models.filter(m => m.id !== id);
+ localStorage.setItem('user_registered_models', JSON.stringify(models));
+ updateDashboardStats();
+ }
+ }
+
+ function openNicknameModal() {
+ document.getElementById('input-user-nickname').value = localStorage.getItem('user_profile_nickname') || '주인님';
+ document.getElementById('nickname-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+ function closeNicknameModal() {
+ document.getElementById('nickname-modal').classList.add('hidden');
+ }
+ function saveUserNickname() {
+ const val = document.getElementById('input-user-nickname').value.trim();
+ if (!val) return;
+ localStorage.setItem('user_profile_nickname', val);
+ closeNicknameModal();
+ updateDashboardStats();
+ }
+
+ function renderPersonaList() {
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ const container = document.getElementById('personas-list-grid');
+
+ if (personas.length === 0) {
+ container.innerHTML = `
+ <div class="col-span-full py-16 text-center text-xs text-[var(--muted)]">
+ 등록된 페르소나가 없습니다. 우측 상단 '+ 새 페르소나 추가' 버튼을 눌러보세요.
+ </div>
+ `;
+ return;
+ }
+
+ container.innerHTML = personas.map(p => {
+ const avatarSrc = p.avatar || DEFAULT_FALLBACK_AVATAR;
+ return `
+ <div class="bg-[var(--bg)] border border-[var(--border)]/30 p-4 rounded-2xl flex flex-col justify-between space-y-3 shadow-sm">
+ <div>
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 rounded-xl bg-[var(--card)] border border-[var(--border)]/30 overflow-hidden shrink-0 cursor-pointer" onclick="openLightbox('${avatarSrc}')">
+ <img src="${avatarSrc}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
+ </div>
+ <div class="overflow-hidden flex-1">
+ <h3 class="font-bold text-sm text-[var(--ink)] truncate">${escapeHtml(p.name)}</h3>
+ <p class="text-xs text-[var(--muted)] font-medium mt-0.5 line-clamp-1">${escapeHtml(p.desc || '설명 없음')}</p>
+ </div>
+ </div>
+ <div class="mt-3 bg-[var(--card)]/30 border border-[var(--border)]/20 p-2.5 rounded-xl text-[11px] text-[var(--ink)] font-mono line-clamp-3">
+ ${escapeHtml(p.prompt)}
+ </div>
+ </div>
+ 
+ <div class="flex justify-end gap-2 pt-2 border-t border-[var(--border)]/20 ">
+ <button onclick="openEditPersonaModal('${p.id}')" class="text-xs font-semibold text-[var(--muted)] hover:text-[var(--ink)] px-2 py-1 flex items-center gap-1">
+ <i data-lucide="edit-2" class="w-3 h-3"></i>
+ <span>수정</span>
+ </button>
+ <button onclick="deletePersona('${p.id}')" class="text-xs font-semibold text-rose-500 hover:text-rose-600 px-2 py-1">삭제</button>
+ </div>
+ </div>
+ `;
+ }).join('');
+ lucide.createIcons();
+ }
+
+ function openPersonaModal() {
+ document.getElementById('edit-persona-id').value = '';
+ document.getElementById('persona-modal-title').innerHTML = '<i data-lucide="user-check" class="w-4 h-4 text-[var(--muted)]"></i> 새 페르소나 등록';
+ document.getElementById('persona-name').value = '';
+ document.getElementById('persona-desc').value = '';
+ document.getElementById('persona-prompt').value = '';
+ currentPersonaAvatarBase64 = '';
+ document.getElementById('persona-preview-img').src = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + Date.now();
+ document.getElementById('persona-avatar-file').value = '';
+
+ document.getElementById('persona-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function openEditPersonaModal(personaId) {
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ const target = personas.find(p => p.id === personaId);
+ if (!target) return;
+
+ document.getElementById('edit-persona-id').value = target.id;
+ document.getElementById('persona-modal-title').innerHTML = '<i data-lucide="edit-2" class="w-4 h-4 text-[var(--muted)]"></i> 페르소나 수정';
+ document.getElementById('persona-name').value = target.name || '';
+ document.getElementById('persona-desc').value = target.desc || '';
+ document.getElementById('persona-prompt').value = target.prompt || '';
+ 
+ currentPersonaAvatarBase64 = target.avatar || '';
+ document.getElementById('persona-preview-img').src = target.avatar || DEFAULT_FALLBACK_AVATAR;
+ document.getElementById('persona-avatar-file').value = '';
+
+ document.getElementById('persona-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closePersonaModal() {
+ document.getElementById('persona-modal').classList.add('hidden');
+ }
+
+ function handleSavePersona(e) {
+ e.preventDefault();
+ const editId = document.getElementById('edit-persona-id').value;
+ const name = document.getElementById('persona-name').value.trim();
+ const desc = document.getElementById('persona-desc').value.trim();
+ const prompt = document.getElementById('persona-prompt').value.trim();
+
+ const finalAvatar = currentPersonaAvatarBase64 || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`;
+
+ let personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+
+ if (editId) {
+ const idx = personas.findIndex(p => p.id === editId);
+ if (idx !== -1) {
+ personas[idx].name = name;
+ personas[idx].desc = desc;
+ personas[idx].prompt = prompt;
+ personas[idx].avatar = finalAvatar;
+ }
+ } else {
+ const newPersona = {
+ id: `persona-${Date.now()}`,
+ name,
+ avatar: finalAvatar,
+ desc,
+ prompt
+ };
+ personas.push(newPersona);
+ }
+
+ localStorage.setItem('user_personas', JSON.stringify(personas));
+
+ closePersonaModal();
+ renderPersonaList();
+ alert(`'${name}' 페르소나가 저장되었습니다!`);
+ }
+
+ function deletePersona(id) {
+ if (confirm('이 페르소나를 삭제하시겠습니까?')) {
+ let personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ personas = personas.filter(p => p.id !== id);
+ localStorage.setItem('user_personas', JSON.stringify(personas));
+ renderPersonaList();
+ }
+ }
+
+ function renderCharacterFeed() {
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const query = (document.getElementById('char-search-input')?.value || '').toLowerCase();
+ const grid = document.getElementById('characters-grid');
+
+ const filtered = chars.filter(c => 
+ c.name.toLowerCase().includes(query) || 
+ (c.intro && c.intro.toLowerCase().includes(query))
+ );
+
+ if (filtered.length === 0) {
+ grid.innerHTML = `<div class="col-span-full py-16 text-center text-xs text-[var(--muted)]">일치하는 캐릭터가 없습니다.</div>`;
+ return;
+ }
+
+ grid.innerHTML = filtered.map(char => {
+ const avatarSrc = char.avatar || DEFAULT_FALLBACK_AVATAR;
+ return `
+ <div class="relative flex flex-col bg-[var(--bg)] border border-[var(--border)]/30 rounded-2xl sm:rounded-3xl overflow-hidden hover:border-[var(--accent)] transition group shadow-sm">
+ 
+ <button onclick="confirmDeleteCharacter(event, '${char.id}', '${escapeHtml(char.name)}')" title="캐릭터 삭제" class="absolute top-2.5 right-2.5 p-1.5 bg-black/40 hover:bg-black/70 backdrop-blur-md text-[var(--ink)] rounded-full transition z-10">
+ <i data-lucide="trash-2" class="w-3 h-3"></i>
+ </button>
+
+ <div onclick="openCharacterSessionChooser('${char.id}')" class="cursor-pointer flex-1 flex flex-col">
+ <div class="w-full aspect-[2/3] bg-[var(--card)]/60 overflow-hidden relative" onclick="event.stopPropagation(); openLightbox('${avatarSrc}');">
+ <img src="${avatarSrc}" alt="${char.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
+ <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+ <div class="absolute bottom-2.5 left-3 right-3 sm:bottom-3 sm:left-4 sm:right-4">
+ <h3 class="font-bold text-xs sm:text-base text-[var(--ink)] truncate drop-shadow-sm">${char.name}</h3>
+ <span class="text-[9px] sm:text-[10px] text-[var(--muted)] font-medium drop-shadow-sm">by ${char.author || '주인님'}</span>
+ </div>
+ </div>
+
+ <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+ <p class="text-[11px] sm:text-xs text-[var(--muted)] line-clamp-2 leading-relaxed flex-1">${char.intro || '등록된 소개가 없습니다.'}</p>
+ <div class="mt-2.5 pt-2 border-t border-[var(--border)]/20 flex justify-between items-center text-[10px] sm:text-[11px]">
+ <span class="text-[var(--muted)] flex items-center gap-1 font-medium"><i data-lucide="messages-square" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i> 대화방</span>
+ <span class="text-[var(--ink)] font-bold group-hover:translate-x-0.5 transition">입장 →</span>
+ </div>
+ </div>
+ </div>
+ </div>
+ `;
+ }).join('');
+ lucide.createIcons();
+ }
+
+ function confirmDeleteCharacter(e, charId, charName) {
+ e.stopPropagation();
+ const firstCheck = confirm(`[1차 확인]\n"${charName}" 캐릭터를 삭제하시겠습니까?`);
+ if (firstCheck) {
+ const secondCheck = confirm(`[최종 경고]\n정말 "${charName}" 캐릭터를 삭제하시겠습니까?\n이 캐릭터와 나눈 모든 다중 채팅방과 대화 기록이 영구히 삭제됩니다.`);
+ if (secondCheck) {
+ let chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ chars = chars.filter(c => c.id !== charId);
+ localStorage.setItem('crack_characters', JSON.stringify(chars));
+
+ let sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const toRemoveSessions = sessions.filter(s => s.characterId === charId);
+ toRemoveSessions.forEach(s => localStorage.removeItem(`chat_history_${s.id}`));
+ 
+ sessions = sessions.filter(s => s.characterId !== charId);
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+
+ renderCharacterFeed();
+ renderActiveChatsList();
+ updateDashboardStats();
+ alert(`"${charName}" 캐릭터와 모든 대화방이 안전하게 삭제되었습니다.`);
+ }
+ }
+ }
+
+ function handleImageUpload(e, targetType) {
+ const file = e.target.files[0];
+ if (!file) return;
+
+ const reader = new FileReader();
+ reader.onload = (event) => {
+ if (targetType === 'character') {
+ currentUploadedAvatarBase64 = event.target.result;
+ document.getElementById('preview-img').src = currentUploadedAvatarBase64;
+ } else if (targetType === 'persona') {
+ currentPersonaAvatarBase64 = event.target.result;
+ document.getElementById('persona-preview-img').src = currentPersonaAvatarBase64;
+ }
+ };
+ reader.readAsDataURL(file);
+ }
+
+ function saveCharacterDraft() {
+ const draft = {
+ name: document.getElementById('create-name').value,
+ avatarBase64: currentUploadedAvatarBase64,
+ intro: document.getElementById('create-intro').value,
+ prompt: document.getElementById('create-prompt').value,
+ startTitle: document.getElementById('create-start-title').value,
+ greeting: document.getElementById('create-greeting').value,
+ startContext: document.getElementById('create-start-context').value,
+ savedAt: new Date().toLocaleTimeString()
+ };
+
+ localStorage.setItem('kolbom_character_draft', JSON.stringify(draft));
+ alert(`[${draft.savedAt}] 작성 중인 내용이 임시저장되었습니다.`);
+ }
+
+ function checkCharacterDraft() {
+ const draftStr = localStorage.getItem('kolbom_character_draft');
+ const banner = document.getElementById('draft-alert-banner');
+ if (draftStr && banner) {
+ banner.classList.remove('hidden');
+ } else if (banner) {
+ banner.classList.add('hidden');
+ }
+ }
+
+ function loadCharacterDraft() {
+ const draftStr = localStorage.getItem('kolbom_character_draft');
+ if (!draftStr) return;
+ const draft = JSON.parse(draftStr);
+
+ document.getElementById('create-name').value = draft.name || '';
+ document.getElementById('create-intro').value = draft.intro || '';
+ document.getElementById('create-prompt').value = draft.prompt || '';
+ document.getElementById('create-start-title').value = draft.startTitle || '';
+ document.getElementById('create-greeting').value = draft.greeting || '';
+ document.getElementById('create-start-context').value = draft.startContext || '';
+
+ if (draft.avatarBase64) {
+ currentUploadedAvatarBase64 = draft.avatarBase64;
+ document.getElementById('preview-img').src = draft.avatarBase64;
+ }
+
+ document.getElementById('draft-alert-banner').classList.add('hidden');
+ alert('임시저장된 내용을 불러왔습니다.');
+ }
+
+ function clearCharacterDraft() {
+ localStorage.removeItem('kolbom_character_draft');
+ document.getElementById('draft-alert-banner').classList.add('hidden');
+ }
+
+ function handleCreateCharacter(e) {
+ e.preventDefault();
+ const name = document.getElementById('create-name').value.trim();
+ const intro = document.getElementById('create-intro').value.trim();
+ const systemPrompt = document.getElementById('create-prompt').value.trim();
+ const startTitle = document.getElementById('create-start-title').value.trim();
+ const greeting = document.getElementById('create-greeting').value.trim();
+ const startContext = document.getElementById('create-start-context').value.trim();
+
+ const finalAvatar = currentUploadedAvatarBase64 || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`;
+
+ const newChar = {
+ id: `char-${Date.now()}`,
+ name,
+ avatar: finalAvatar,
+ intro,
+ systemPrompt,
+ startTitle: startTitle || '기본 루트',
+ greeting,
+ startContext,
+ author: localStorage.getItem('user_profile_nickname') || '주인님'
+ };
+
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ chars.unshift(newChar);
+ localStorage.setItem('crack_characters', JSON.stringify(chars));
+
+ clearCharacterDraft();
+ currentUploadedAvatarBase64 = '';
+ document.getElementById('preview-img').src = DEFAULT_FALLBACK_AVATAR;
+
+ alert(`"${name}" 캐릭터가 성공적으로 등록되었습니다!`);
+ e.target.reset();
+ navigate('characters');
+ }
+
+ function openCharacterSessionChooser(charId) {
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const char = chars.find(c => c.id === charId);
+ if (!char) return;
+
+ selectedCharForSessionModal = char;
+ document.getElementById('session-modal-name').innerText = char.name;
+ document.getElementById('session-modal-avatar').src = char.avatar || DEFAULT_FALLBACK_AVATAR;
+
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const charSessions = sessions.filter(s => s.characterId === charId);
+ const listContainer = document.getElementById('session-modal-existing-list');
+
+ if (charSessions.length === 0) {
+ listContainer.innerHTML = `<p class="text-[11px] text-[var(--muted)] py-3 text-center">아직 열린 대화방이 없습니다.</p>`;
+ } else {
+ listContainer.innerHTML = charSessions.map((s) => `
+ <div class="group/item p-2.5 rounded-2xl bg-[var(--card)]/40 border border-[var(--border)]/20 hover:border-[var(--accent)] flex items-center justify-between transition">
+ <div onclick="openSpecificSession('${s.id}')" class="cursor-pointer overflow-hidden flex-1 pr-2">
+ <div class="flex items-center gap-1.5">
+ <span class="text-xs font-bold text-[var(--ink)] truncate">${escapeHtml(s.title || '대화방')}</span>
+ </div>
+ <span class="text-[10px] text-[var(--muted)] truncate block mt-0.5">${escapeHtml(s.lastMessage || '대화 없음')}</span>
+ </div>
+ 
+ <div class="flex items-center gap-1.5 shrink-0">
+ <span class="text-[9px] font-mono text-[var(--muted)]">${s.lastTime || ''}</span>
+ <button onclick="openRenameSessionModal(event, '${s.id}', '${escapeHtml(s.title || '대화방')}')" title="방 이름 수정" class="p-1 text-[var(--muted)] hover:text-[var(--ink)] rounded hover:bg-[var(--card)] transition">
+ <i data-lucide="edit-2" class="w-3 h-3"></i>
+ </button>
+ </div>
+ </div>
+ `).join('');
+ }
+
+ document.getElementById('character-session-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeCharacterSessionModal() {
+ document.getElementById('character-session-modal').classList.add('hidden');
+ }
+
+ function startNewChatSession() {
+ if (!selectedCharForSessionModal) return;
+ const char = selectedCharForSessionModal;
+ const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+
+ const newSessionId = `session-${Date.now()}`;
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ 
+ const sessionCountForChar = sessions.filter(s => s.characterId === char.id).length;
+
+ const newSession = {
+ id: newSessionId,
+ characterId: char.id,
+ folderId: null,
+ title: sessionCountForChar === 0 ? (char.startTitle || '기본 루트') : `${char.startTitle || '대화방'} #${sessionCountForChar + 1}`,
+ personaId: personas[0]?.id || '',
+ modelId: models[0]?.id || '',
+ lastMessage: char.greeting,
+ lastTime: getCurrentTime(),
+ createdAt: Date.now()
+ };
+
+ sessions.unshift(newSession);
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+
+ const initMessages = [{ role: 'assistant', content: char.greeting, time: getCurrentTime() }];
+ localStorage.setItem(`chat_history_${newSessionId}`, JSON.stringify(initMessages));
+
+ closeCharacterSessionModal();
+ navigate('chatroom', { sessionId: newSessionId });
+ }
+
+ function openSpecificSession(sessionId) {
+ closeCharacterSessionModal();
+ navigate('chatroom', { sessionId });
+ }
+
+ function openRenameSessionModal(e, sessionId, currentTitle) {
+ if (e) e.stopPropagation();
+ document.getElementById('rename-session-id').value = sessionId;
+ document.getElementById('rename-session-input').value = currentTitle;
+ document.getElementById('rename-session-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeRenameSessionModal() {
+ document.getElementById('rename-session-modal').classList.add('hidden');
+ }
+
+ function saveRenamedSession() {
+ const sessionId = document.getElementById('rename-session-id').value;
+ const newTitle = document.getElementById('rename-session-input').value.trim();
+ if (!newTitle || !sessionId) return;
+
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const idx = sessions.findIndex(s => s.id === sessionId);
+ if (idx !== -1) {
+ sessions[idx].title = newTitle;
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ }
+
+ closeRenameSessionModal();
+ 
+ if (selectedCharForSessionModal) {
+ openCharacterSessionChooser(selectedCharForSessionModal.id);
+ }
+ 
+ renderActiveChatsList();
+
+ if (currentSessionId === sessionId) {
+ document.getElementById('room-session-tag').innerText = newTitle;
+ }
+ }
+
+ function editRoomTitleFromHeader() {
+ if (!currentSessionId) return;
+ const session = getCurrentSession();
+ if (session) {
+ openRenameSessionModal(null, session.id, session.title || '대화방');
+ }
+ }
+
+ function openCreateFolderModal() {
+ document.getElementById('create-folder-name-input').value = '';
+ document.getElementById('create-folder-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeCreateFolderModal() {
+ document.getElementById('create-folder-modal').classList.add('hidden');
+ }
+
+ function saveNewFolder() {
+ const name = document.getElementById('create-folder-name-input').value.trim();
+ if (!name) return;
+
+ const folders = JSON.parse(localStorage.getItem('kolbom_chat_folders') || '[]');
+ const newFolder = {
+ id: `folder-${Date.now()}`,
+ name
+ };
+ folders.push(newFolder);
+ localStorage.setItem('kolbom_chat_folders', JSON.stringify(folders));
+
+ closeCreateFolderModal();
+ selectedChatFolderFilter = newFolder.id;
+ renderActiveChatsList();
+ }
+
+ function deleteFolder(folderId) {
+ if (confirm('이 폴더를 삭제하시겠습니까?\n(폴더 안의 대화방은 삭제되지 않고 미분류로 이동됩니다.)')) {
+ let folders = JSON.parse(localStorage.getItem('kolbom_chat_folders') || '[]');
+ folders = folders.filter(f => f.id !== folderId);
+ localStorage.setItem('kolbom_chat_folders', JSON.stringify(folders));
+
+ let sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ sessions.forEach(s => {
+ if (s.folderId === folderId) s.folderId = null;
+ });
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+
+ selectedChatFolderFilter = 'all';
+ renderActiveChatsList();
+ }
+ }
+
+ function openMoveFolderModal(e, sessionId) {
+ if (e) e.stopPropagation();
+ document.getElementById('move-session-id').value = sessionId;
+ 
+ const folders = JSON.parse(localStorage.getItem('kolbom_chat_folders') || '[]');
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const currentSession = sessions.find(s => s.id === sessionId);
+ const currentFolderId = currentSession ? currentSession.folderId : null;
+
+ const listContainer = document.getElementById('move-folder-options-list');
+ 
+ let html = `
+ <button onclick="setSessionFolder('${sessionId}', null)" class="w-full p-2.5 rounded-xl border text-left text-xs font-semibold flex items-center justify-between transition ${
+ !currentFolderId ? 'bg-[var(--accent)] text-[var(--accent-text)] border-transparent' : 'bg-[var(--card)]/30 border-[var(--border)]/20 text-[var(--ink)] hover:border-[var(--accent)]'
+ }">
+ <span class="flex items-center gap-2">📂 미분류 (기본)</span>
+ ${!currentFolderId ? '<span>✓</span>' : ''}
+ </button>
+ `;
+
+ html += folders.map(f => `
+ <button onclick="setSessionFolder('${sessionId}', '${f.id}')" class="w-full p-2.5 rounded-xl border text-left text-xs font-semibold flex items-center justify-between transition ${
+ currentFolderId === f.id ? 'bg-[var(--accent)] text-[var(--accent-text)] border-transparent' : 'bg-[var(--card)]/30 border-[var(--border)]/20 text-[var(--ink)] hover:border-[var(--accent)]'
+ }">
+ <span class="flex items-center gap-2">📁 ${escapeHtml(f.name)}</span>
+ ${currentFolderId === f.id ? '<span>✓</span>' : ''}
+ </button>
+ `).join('');
+
+ listContainer.innerHTML = html;
+ document.getElementById('move-folder-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeMoveFolderModal() {
+ document.getElementById('move-folder-modal').classList.add('hidden');
+ }
+
+ function setSessionFolder(sessionId, folderId) {
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const idx = sessions.findIndex(s => s.id === sessionId);
+ if (idx !== -1) {
+ sessions[idx].folderId = folderId;
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ }
+ closeMoveFolderModal();
+ renderActiveChatsList();
+ }
+
+ function renderActiveChatsList() {
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const folders = JSON.parse(localStorage.getItem('kolbom_chat_folders') || '[]');
+ const container = document.getElementById('active-chats-list');
+ const tabsContainer = document.getElementById('chat-folder-tabs');
+
+ let tabsHtml = `
+ <button onclick="changeFolderFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+ selectedChatFolderFilter === 'all' ? 'bg-[var(--accent)] text-[var(--accent-text)] ' : 'bg-[var(--card)]/40 text-[var(--muted)] hover:text-[var(--ink)] '
+ }">
+ 전체 (${sessions.length})
+ </button>
+ <button onclick="changeFolderFilter('unclassified')" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+ selectedChatFolderFilter === 'unclassified' ? 'bg-[var(--accent)] text-[var(--accent-text)] ' : 'bg-[var(--card)]/40 text-[var(--muted)] hover:text-[var(--ink)] '
+ }">
+ 미분류 (${sessions.filter(s => !s.folderId).length})
+ </button>
+ `;
+
+ tabsHtml += folders.map(f => {
+ const count = sessions.filter(s => s.folderId === f.id).length;
+ const isActive = selectedChatFolderFilter === f.id;
+ return `
+ <div class="flex items-center rounded-xl overflow-hidden shrink-0 ${isActive ? 'bg-[var(--accent)] text-[var(--accent-text)] ' : 'bg-[var(--card)]/40 text-[var(--muted)]'}">
+ <button onclick="changeFolderFilter('${f.id}')" class="px-3 py-1.5 text-xs font-bold whitespace-nowrap transition hover:opacity-80">
+ 📁 ${escapeHtml(f.name)} (${count})
+ </button>
+ <button onclick="deleteFolder('${f.id}')" title="폴더 삭제" class="pr-2 pl-0.5 py-1 text-[11px] opacity-60 hover:opacity-100 hover:text-rose-500">
+ ×
+ </button>
+ </div>
+ `;
+ }).join('');
+
+ tabsContainer.innerHTML = tabsHtml;
+
+ let filteredSessions = sessions;
+ if (selectedChatFolderFilter === 'unclassified') {
+ filteredSessions = sessions.filter(s => !s.folderId);
+ } else if (selectedChatFolderFilter !== 'all') {
+ filteredSessions = sessions.filter(s => s.folderId === selectedChatFolderFilter);
+ }
+
+ if (filteredSessions.length === 0) {
+ container.innerHTML = `
+ <div class="text-center py-20 bg-[var(--bg)] rounded-3xl border border-[var(--border)]/30 p-6 space-y-3 shadow-sm">
+ <p class="text-xs text-[var(--muted)]">해당 폴더에 보관된 대화방이 없습니다.</p>
+ </div>
+ `;
+ return;
+ }
+
+ container.innerHTML = `
+ <div class="divide-y divide-[var(--border)]/20 bg-[var(--bg)] border border-[var(--border)]/30 rounded-3xl overflow-hidden shadow-sm">
+ ${filteredSessions.map(session => {
+ const char = chars.find(c => c.id === session.characterId) || { name: '삭제된 캐릭터', avatar: DEFAULT_FALLBACK_AVATAR };
+ const folderObj = folders.find(f => f.id === session.folderId);
+ 
+ return `
+ <div class="flex items-center justify-between p-4 sm:p-5 hover:bg-[var(--card)]/20 transition group">
+ <div onclick="navigate('chatroom', { sessionId: '${session.id}' })" class="cursor-pointer flex items-center gap-3.5 overflow-hidden flex-1">
+ <img src="${char.avatar || DEFAULT_FALLBACK_AVATAR}" alt="${char.name}" class="w-12 aspect-[2/3] rounded-xl object-cover bg-[var(--card)] border border-[var(--border)]/30 shrink-0" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
+ <div class="overflow-hidden">
+ <div class="flex items-center gap-2">
+ <h3 class="font-bold text-sm text-[var(--ink)] transition">${char.name}</h3>
+ <span class="text-[9px] px-1.5 py-0.2 bg-[var(--border)]/20 rounded font-mono text-[var(--muted)] truncate max-w-[120px]">${escapeHtml(session.title || '대화방')}</span>
+ ${folderObj ? `<span class="text-[9px] px-1.5 py-0.2 bg-[var(--card)] text-[var(--ink)] rounded font-medium">📁 ${escapeHtml(folderObj.name)}</span>` : ''}
+ </div>
+ <p class="text-xs text-[var(--muted)] truncate mt-0.5 max-w-xs sm:max-w-md">${session.lastMessage || '대화 없음'}</p>
+ </div>
+ </div>
+
+ <div class="flex items-center gap-2 shrink-0 ml-3">
+ <span class="text-[10px] font-mono text-[var(--muted)] mr-1">${session.lastTime || ''}</span>
+ 
+ <button onclick="openMoveFolderModal(event, '${session.id}')" title="폴더 이동" class="p-1.5 text-[var(--muted)] hover:text-[var(--ink)] rounded-lg hover:bg-[var(--card)]/50 transition">
+ <i data-lucide="folder-input" class="w-3.5 h-3.5"></i>
+ </button>
+
+ <button onclick="openRenameSessionModal(event, '${session.id}', '${escapeHtml(session.title || '대화방')}')" title="방 이름 수정" class="p-1.5 text-[var(--muted)] hover:text-[var(--ink)] rounded-lg hover:bg-[var(--card)]/50 transition">
+ <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+ </button>
+
+ <button onclick="confirmDeleteSession(event, '${session.id}')" title="채팅방 삭제" class="p-1.5 text-[var(--muted)] hover:text-rose-500 rounded-lg hover:bg-[var(--card)]/50 transition">
+ <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+ </button>
+ </div>
+ </div>
+ `;
+ }).join('')}
+ </div>
+ `;
+ lucide.createIcons();
+ }
+
+ function changeFolderFilter(filterId) {
+ selectedChatFolderFilter = filterId;
+ renderActiveChatsList();
+ }
+
+ function confirmDeleteSession(e, sessionId) {
+ e.stopPropagation();
+ if (confirm('이 대화방을 삭제하시겠습니까?\n대화 내역이 모두 사라지며 복구할 수 없습니다.')) {
+ let sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ sessions = sessions.filter(s => s.id !== sessionId);
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ 
+ localStorage.removeItem(`chat_history_${sessionId}`);
+ 
+ renderActiveChatsList();
+ updateDashboardStats();
+ }
+ }
+
+ // --- 1:1 카톡 UI 채팅방 (키보드 & 스크롤 최적화) ---
+ function openChatRoom(sessionId) {
+ currentSessionId = sessionId;
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const session = sessions.find(s => s.id === sessionId);
+ if (!session) {
+ navigate('chats');
+ return;
+ }
+
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const char = chars.find(c => c.id === session.characterId);
+ if (!char) return;
+
+ document.getElementById('room-char-name').innerText = char.name;
+ document.getElementById('room-session-tag').innerText = session.title || '대화방';
+
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ const personaSelect = document.getElementById('room-persona-select');
+ personaSelect.innerHTML = personas.map(p => `
+ <option value="${p.id}" ${p.id === session.personaId ? 'selected' : ''}>👤 ${escapeHtml(p.name)}</option>
+ `).join('');
+
+ const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ const modelSelect = document.getElementById('room-model-select');
+ modelSelect.innerHTML = models.map(m => `
+ <option value="${m.id}" ${m.id === session.modelId ? 'selected' : ''}>⚡ ${escapeHtml(m.label)}</option>
+ `).join('');
+
+ renderChatMessages();
+ applyKakaoTheme();
+ setTimeout(() => scrollToBottom(), 50);
+ }
+
+ function changeRoomPersona(newPersonaId) {
+ if (!currentSessionId) return;
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const idx = sessions.findIndex(s => s.id === currentSessionId);
+ if (idx !== -1) {
+ sessions[idx].personaId = newPersonaId;
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ }
+ renderChatMessages();
+ }
+
+ function changeRoomModel(newModelId) {
+ if (!currentSessionId) return;
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const idx = sessions.findIndex(s => s.id === currentSessionId);
+ if (idx !== -1) {
+ sessions[idx].modelId = newModelId;
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ }
+ }
+
+ function getCurrentSession() {
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ return sessions.find(s => s.id === currentSessionId);
+ }
+
+ function getActivePersonaForCurrentRoom() {
+ const session = getCurrentSession();
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ return personas.find(p => p.id === session?.personaId) || personas[0] || { name: '나', prompt: '' };
+ }
+
+ function getActiveModelForCurrentRoom() {
+ const session = getCurrentSession();
+ const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ return models.find(m => m.id === session?.modelId) || models[0] || { modelKey: 'mock-engine', apiKey: '' };
+ }
+
+    function renderChatMessages() {
+      if (!currentSessionId) return;
+      const session = getCurrentSession();
+      const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+      const char = chars.find(c => c.id === session?.characterId);
+      const messages = JSON.parse(localStorage.getItem(`chat_history_${currentSessionId}`) || '[]');
+      const activePersona = getActivePersonaForCurrentRoom();
+      const container = document.getElementById('kakao-messages');
+
+      container.innerHTML = messages.map(msg => {
+        const isUser = msg.role === 'user';
+        if (isUser) {
+          return `
+            <div class="flex flex-col items-end gap-0.5">
+              <span class="text-[10px] ${isKakaoDark ? 'text-zinc-400' : 'text-slate-600'} font-medium pr-1">${escapeHtml(activePersona.name)}</span>
+              <div class="flex justify-end items-end gap-1.5">
+                <span class="text-[10px] ${isKakaoDark ? 'text-zinc-500' : 'text-slate-600'} shrink-0 mb-0.5 font-mono">${msg.time}</span>
+                <div class="max-w-[75%] px-3.5 py-2 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm bg-[#FEE500] text-slate-950 rounded-tr-none font-normal">
+                  ${escapeHtml(msg.content)}
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="flex justify-start items-start gap-2">
+              <img src="${char?.avatar || DEFAULT_FALLBACK_AVATAR}" alt="avatar" class="w-9 aspect-[2/3] rounded-lg object-cover mt-0.5 bg-slate-800 border border-black/10 shrink-0 cursor-pointer" onclick="openLightbox('${char?.avatar || DEFAULT_FALLBACK_AVATAR}')" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
+              <div>
+                <span class="text-[11px] ${isKakaoDark ? 'text-zinc-400' : 'text-slate-700'} block mb-1 font-medium">${char?.name || 'AI'}</span>
+                <div class="flex items-end gap-1.5">
+                  <div class="max-w-[78%] px-3.5 py-2 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${
+                    isKakaoDark 
+                      ? 'bg-[#2A2A2A] text-slate-100 border border-zinc-700/60 rounded-tl-none' 
+                      : 'bg-white text-slate-950 rounded-tl-none'
+                  }">
+                    ${escapeHtml(msg.content)}
+                  </div>
+                  <span class="text-[10px] ${isKakaoDark ? 'text-zinc-500' : 'text-slate-600'} shrink-0 mb-0.5 font-mono">${msg.time}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }).join('');
+
+      scrollToBottom();
+    }
+
+ function handleChatKeyDown(e) {
+ if (e.key === 'Enter' && !e.shiftKey) {
+ e.preventDefault();
+ sendMessage();
+ }
+ }
+
+ async function sendMessage() {
+ const inputEl = document.getElementById('chat-input');
+ const text = inputEl.value.trim();
+ if (!text || !currentSessionId) return;
+
+ const session = getCurrentSession();
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const char = chars.find(c => c.id === session?.characterId);
+ if (!char) return;
+
+ const userTime = getCurrentTime();
+ const messages = JSON.parse(localStorage.getItem(`chat_history_${currentSessionId}`) || '[]');
+
+ messages.push({ role: 'user', content: text, time: userTime });
+ localStorage.setItem(`chat_history_${currentSessionId}`, JSON.stringify(messages));
+ inputEl.value = '';
+ renderChatMessages();
+
+ updateSessionLastMessage(currentSessionId, text, userTime);
+
+ const container = document.getElementById('kakao-messages');
+ const typingIndicator = document.createElement('div');
+ typingIndicator.id = 'typing-indicator';
+ typingIndicator.className = 'flex items-center gap-2 text-xs text-slate-500 pl-11 animate-pulse';
+ typingIndicator.innerText = `${char.name} 입력 중...`;
+ container.appendChild(typingIndicator);
+ scrollToBottom();
+
+ const sendBtn = document.getElementById('send-btn');
+ sendBtn.disabled = true;
+
+ try {
+ const activePersona = getActivePersonaForCurrentRoom();
+ const activeModel = getActiveModelForCurrentRoom();
+
+ const { replyText, inTokens, outTokens } = await requestLLMResponse(char, activePersona, activeModel, messages);
+ typingIndicator.remove();
+
+ const botTime = getCurrentTime();
+ messages.push({ role: 'assistant', content: replyText, time: botTime });
+ localStorage.setItem(`chat_history_${currentSessionId}`, JSON.stringify(messages));
+
+ updateSessionLastMessage(currentSessionId, replyText, botTime);
+ accumulateModelCost(activeModel.id, inTokens, outTokens);
+
+ renderChatMessages();
+ } catch (err) {
+ typingIndicator.remove();
+ alert('답변 생성 중 오류: ' + err.message);
+ } finally {
+ sendBtn.disabled = false;
+ inputEl.focus();
+ }
+ }
+
+ function updateSessionLastMessage(sessionId, lastMessage, lastTime) {
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const idx = sessions.findIndex(s => s.id === sessionId);
+ if (idx !== -1) {
+ sessions[idx].lastMessage = lastMessage;
+ sessions[idx].lastTime = lastTime;
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ }
+ }
+
+ function deleteCurrentChatSession() {
+ if (!currentSessionId) return;
+ if (confirm('현재 진행 중인 이 대화방을 삭제하시겠습니까?')) {
+ let sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ sessions = sessions.filter(s => s.id !== currentSessionId);
+ localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
+ 
+ localStorage.removeItem(`chat_history_${currentSessionId}`);
+ navigate('chats');
+ }
+ }
+
+ function accumulateModelCost(modelId, inTokens, outTokens) {
+ let models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
+ const targetIndex = models.findIndex(m => m.id === modelId);
+ if (targetIndex === -1) return;
+
+ const m = models[targetIndex];
+ const pricing = MODEL_PRICING[m.modelKey] || { inputPer1M: 0, outputPer1M: 0 };
+ 
+ const addedCostUSD = ((inTokens / 1000000) * pricing.inputPer1M) + ((outTokens / 1000000) * pricing.outputPer1M);
+
+ m.stats = m.stats || { calls: 0, inputTokens: 0, outputTokens: 0, costUSD: 0 };
+ m.stats.calls += 1;
+ m.stats.inputTokens += inTokens;
+ m.stats.outputTokens += outTokens;
+ m.stats.costUSD += addedCostUSD;
+
+ models[targetIndex] = m;
+ localStorage.setItem('user_registered_models', JSON.stringify(models));
+ }
+
+ async function requestLLMResponse(char, userPersona, modelConfig, messages) {
+ let combinedSystemPrompt = `${char.systemPrompt}`;
+
+ if (char.startContext && char.startContext.trim()) {
+ combinedSystemPrompt += `\n\n[현재 시작 상황 디렉팅 (미공개 지침)]\n${char.startContext.trim()}`;
+ }
+
+ combinedSystemPrompt += `\n\n[대화 상대(유저)의 페르소나 설정]\n- 이름/역할: ${userPersona.name}\n- 유저 세부 정보: ${userPersona.prompt}\n위 설정과 초기 상황을 바탕으로 캐릭터 성격에 맞게 몰입하여 자연스럽게 반응하세요.`;
+
+ const modelKey = modelConfig.modelKey;
+ const apiKey = modelConfig.apiKey;
+ const pricing = MODEL_PRICING[modelKey] || { provider: 'mock' };
+
+ if (pricing.provider === 'openai' && apiKey) {
+ const payloadMessages = [
+ { role: 'system', content: combinedSystemPrompt },
+ ...messages.map(m => ({ role: m.role, content: m.content }))
+ ];
+
+ const res = await fetch('https://api.openai.com/v1/chat/completions', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json',
+ 'Authorization': `Bearer ${apiKey}`
+ },
+ body: JSON.stringify({
+ model: 'gpt-4o-mini',
+ messages: payloadMessages,
+ temperature: 0.8
+ })
+ });
+
+ if (!res.ok) throw new Error(`OpenAI API 오류 (${res.status})`);
+ const data = await res.json();
+ return {
+ replyText: data.choices[0].message.content,
+ inTokens: data.usage?.prompt_tokens || 100,
+ outTokens: data.usage?.completion_tokens || 50
+ };
+ }
+
+ if (pricing.provider === 'gemini' && apiKey) {
+ const contents = messages.map(m => ({
+ role: m.role === 'assistant' ? 'model' : 'user',
+ parts: [{ text: m.content }]
+ }));
+
+ const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ systemInstruction: { parts: [{ text: combinedSystemPrompt }] },
+ contents: contents
+ })
+ });
+
+ if (!res.ok) throw new Error(`Gemini API 오류 (${res.status})`);
+ const data = await res.json();
+ return {
+ replyText: data.candidates[0].content.parts[0].text,
+ inTokens: data.usageMetadata?.promptTokenCount || 120,
+ outTokens: data.usageMetadata?.candidatesTokenCount || 60
+ };
+ }
+
+ await new Promise(r => setTimeout(r, 700));
+ const sampleReplies = [
+ `${userPersona.name}(이) 너 방금 뭐라고 했냐? 말 돌리지 말고 제대로 말해봐.`,
+ `뭐래는 거야 진짜... 그래 알았어, ${userPersona.name} 네가 그렇다면 일단 들어줄게.`,
+ `흥, ${userPersona.name} 네가 그럴 줄 알았다. 귀찮게 굴지 말고 따라오기나 해.`,
+ `방금 그 말 진심이야? ...${userPersona.name}, 너 가끔 사람 당황하게 만들더라.`
+ ];
+ return {
+ replyText: sampleReplies[Math.floor(Math.random() * sampleReplies.length)],
+ inTokens: 80,
+ outTokens: 40
+ };
+ }
+
+    function toggleKakaoTheme() {
+      isKakaoDark = !isKakaoDark;
+      applyKakaoTheme();
+      renderChatMessages();
+    }
+
+    function applyKakaoTheme() {
+      const container = document.getElementById('kakao-container');
+      const header = document.getElementById('kakao-header');
+      const inputBar = document.getElementById('kakao-input-bar');
+      const input = document.getElementById('chat-input');
+      const backBtn = document.getElementById('kakao-back-btn');
+      const charName = document.getElementById('room-char-name');
+      const sessionTagBtn = document.getElementById('room-session-tag-btn');
+      const personaSelect = document.getElementById('room-persona-select');
+      const modelSelect = document.getElementById('room-model-select');
+      const themeBtn = document.getElementById('kakao-theme-btn');
+      const themeBtnText = document.getElementById('theme-btn-text');
+      const deleteBtn = document.getElementById('kakao-delete-btn');
+
+      if (isKakaoDark) {
+        container.className = 'w-full h-full sm:max-w-md sm:h-full sm:rounded-3xl flex flex-col bg-[#191919] shadow-2xl relative overflow-hidden transition-colors duration-200';
+        header.className = 'flex items-center justify-between px-3.5 py-2.5 border-b border-zinc-800 bg-[#1E1E1E] select-none z-20 shrink-0 transition-colors duration-200';
+        inputBar.className = 'p-2.5 bg-[#1E1E1E] border-t border-zinc-800 shrink-0 z-20 transition-colors duration-200';
+        input.className = 'flex-1 resize-none rounded-xl px-3.5 py-2.5 text-xs bg-[#2A2A2A] text-white focus:outline-none max-h-24 transition placeholder:text-zinc-500';
+        
+        backBtn.className = 'p-1.5 hover:bg-white/10 rounded-lg transition text-white';
+        charName.className = 'font-bold text-sm leading-tight text-white truncate';
+        sessionTagBtn.className = 'flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded font-mono transition bg-white/10 text-palette-beige hover:bg-white/20';
+        
+        personaSelect.className = 'text-[10px] font-bold bg-white/10 text-white border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer';
+        modelSelect.className = 'text-[10px] font-bold bg-white/15 text-palette-beige border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer';
+        
+        themeBtn.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg transition flex items-center gap-1 bg-white/15 text-white hover:bg-white/25 border border-white/10 shadow-sm';
+        themeBtnText.innerText = '라이트';
+        
+        deleteBtn.className = 'p-1.5 rounded-lg transition text-zinc-400 hover:text-rose-400 hover:bg-white/10';
+      } else {
+        container.className = 'w-full h-full sm:max-w-md sm:h-full sm:rounded-3xl flex flex-col bg-[#A0C0D6] shadow-2xl relative overflow-hidden transition-colors duration-200';
+        header.className = 'flex items-center justify-between px-3.5 py-2.5 border-b border-black/5 bg-[#A0C0D6] select-none z-20 shrink-0 transition-colors duration-200';
+        inputBar.className = 'p-2.5 bg-white border-t border-zinc-200 shrink-0 z-20 transition-colors duration-200';
+        input.className = 'flex-1 resize-none rounded-xl px-3.5 py-2.5 text-xs bg-zinc-100 text-zinc-900 focus:outline-none max-h-24 transition placeholder:text-zinc-400';
+        
+        backBtn.className = 'p-1.5 hover:bg-black/10 rounded-lg transition text-zinc-800';
+        charName.className = 'font-bold text-sm leading-tight text-zinc-900 truncate';
+        sessionTagBtn.className = 'flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded font-mono transition bg-black/10 text-slate-800 hover:bg-black/20';
+        
+        personaSelect.className = 'text-[10px] font-bold bg-black/10 text-zinc-900 border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer';
+        modelSelect.className = 'text-[10px] font-bold bg-black/15 text-zinc-900 border-0 rounded px-1.5 py-0.5 focus:outline-none cursor-pointer';
+        
+        themeBtn.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg transition flex items-center gap-1 bg-black/10 text-zinc-800 hover:bg-black/20';
+        themeBtnText.innerText = '다크';
+        
+        deleteBtn.className = 'p-1.5 rounded-lg transition text-zinc-700 hover:text-rose-600 hover:bg-black/10';
+      }
+      lucide.createIcons();
+    }
+
+ function scrollToBottom() {
+ const el = document.getElementById('kakao-messages');
+ if (el) el.scrollTop = el.scrollHeight;
+ }
+ function getCurrentTime() {
+ return new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: true });
+ }
+ function escapeHtml(text) {
+ if (!text) return '';
+ const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+ return text.replace(/[&<>"']/g, m => map[m]);
+ }
+ </script>
+</body>
+</html>

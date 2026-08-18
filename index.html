@@ -4,7 +4,9 @@
  <meta charset="UTF-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
  <title>콜봄 AI · Kolbom AI</title>
+ <!-- Tailwind CSS CDN -->
  <script src="https://cdn.tailwindcss.com"></script>
+ <!-- Lucide Icons CDN -->
  <script src="https://unpkg.com/lucide@latest"></script>
  <style>
  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -116,6 +118,7 @@
 
  <main class="flex-1 flex flex-col pb-24 sm:pb-12" id="app-container">
 
+ <!-- (VIEW 1) 마이페이지 (대시보드) -->
  <div id="view-dashboard" class="p-4 sm:p-8 max-w-4xl mx-auto w-full space-y-6">
  <div class="pb-2 border-b border-[var(--border)]/30 flex justify-between items-end">
  <div>
@@ -175,6 +178,7 @@
  </section>
  </div>
 
+ <!-- (VIEW 2) 캐릭터 피드 -->
  <div id="view-characters" class="hidden p-3.5 sm:p-8 max-w-7xl mx-auto w-full space-y-4 sm:space-y-6">
  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
  <div>
@@ -206,6 +210,7 @@
  <div id="characters-grid" class="grid grid-cols-3 gap-3 sm:gap-5 pt-1"></div>
  </div>
 
+ <!-- (VIEW 3) 새 캐릭터 등록 -->
  <div id="view-create" class="hidden p-4 sm:p-8 max-w-2xl mx-auto w-full space-y-6">
  <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]/30">
  <div>
@@ -213,20 +218,19 @@
  <p class="text-xs text-[var(--muted)] mt-0.5">새로운 페르소나와 세계관을 가진 AI 캐릭터를 만듭니다.</p>
  </div>
  <div class="flex items-center gap-2">
+ <button type="button" onclick="openDraftListModal()" class="relative px-3 py-1.5 text-xs font-bold rounded-xl border border-[var(--border)]/40 bg-[var(--card)]/50 text-[var(--ink)] hover:border-[var(--accent)] transition flex items-center gap-1">
+ <i data-lucide="archive" class="w-3.5 h-3.5 text-[var(--accent)]"></i>
+ <span>임시저장 목록</span>
+ <span id="draft-count-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-[var(--accent)] text-[var(--accent-text)] text-[9px] font-bold flex items-center justify-center">0</span>
+ </button>
  <button type="button" onclick="saveCharacterDraft()" class="px-3 py-1.5 text-xs font-bold rounded-xl border border-[var(--border)]/40 bg-[var(--card)]/50 text-[var(--ink)] hover:border-[var(--accent)] transition flex items-center gap-1">
  <i data-lucide="save" class="w-3.5 h-3.5 text-[var(--accent)]"></i>
  <span>임시저장</span>
  </button>
- <button type="button" onclick="openDraftsListModal()" class="px-3 py-1.5 text-xs font-bold rounded-xl border border-[var(--border)]/40 bg-[var(--card)]/50 text-[var(--ink)] hover:border-[var(--accent)] transition flex items-center gap-1">
- <i data-lucide="folder-open" class="w-3.5 h-3.5 text-[var(--accent)]"></i>
- <span>임시저장 목록</span>
- </button>
- <button onclick="navigate('characters')" class="text-xs text-[var(--muted)] hover:text-[var(--ink)] transition ml-1">← 돌아가기</button>
  </div>
  </div>
 
  <form onsubmit="handleCreateCharacter(event)" class="space-y-4 bg-[var(--card)]/30 p-5 sm:p-6 rounded-3xl border border-[var(--border)]/30">
- <input type="hidden" id="editing-draft-id" value="" />
  <div>
  <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
  1. 캐릭터 이름 <span class="text-rose-500">*</span>
@@ -273,6 +277,43 @@
  />
  </div>
 
+ <div class="grid grid-cols-2 gap-3">
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 제작자 <span class="text-[10px] text-[var(--muted)] font-normal">(선택)</span>
+ </label>
+ <input
+ type="text"
+ id="create-author"
+ placeholder="예: 주인님"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]"
+ />
+ </div>
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 버전 <span class="text-[10px] text-[var(--muted)] font-normal">(선택)</span>
+ </label>
+ <input
+ type="text"
+ id="create-version"
+ placeholder="예: V1.0"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]"
+ />
+ </div>
+ </div>
+
+ <div>
+ <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
+ 상세 설명 <span class="text-[10px] text-[var(--muted)] font-normal">(선택 · 상세정보 화면 설명란에 노출)</span>
+ </label>
+ <textarea
+ id="create-description"
+ rows="3"
+ placeholder="캐릭터 상세정보 화면에 노출될 조금 더 긴 설명"
+ class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] leading-relaxed"
+ ></textarea>
+ </div>
+
  <div>
  <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
  3. 상세 시스템 프롬프트 (성격, 어투, 세계관 지침) <span class="text-rose-500">*</span>
@@ -287,44 +328,15 @@
  </div>
 
  <div>
- <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
- 4. 시작설정 이름 <span class="text-rose-500">*</span>
- </label>
- <input
- type="text"
- id="create-start-title"
- required
- placeholder="예: 기본 루트, 비 내리는 날의 도서관"
- class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]"
- />
- </div>
-
- <div>
- <label class="block text-xs font-bold text-[var(--ink)] mb-1.5">
- 5. 프롤로그 (첫인사 메시지) <span class="text-rose-500">*</span>
- </label>
- <textarea
- id="create-greeting"
- required
- rows="2"
- placeholder="채팅방 입장 시 캐릭터가 처음 보낼 선톡 메시지"
- class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] resize-none"
- ></textarea>
- </div>
-
- <div>
  <div class="flex items-center justify-between mb-1.5">
  <label class="block text-xs font-bold text-[var(--ink)]">
- 6. 시작 상황 <span class="text-[10px] text-[var(--muted)] font-normal">(선택)</span>
+ 4. 시작 상황 <span class="text-[10px] text-[var(--muted)] font-normal">(최소 1개)</span>
  </label>
- <span class="text-[10px] text-[var(--muted)]">🔒 미공개 설정</span>
+ <button type="button" onclick="addScenarioBlock()" class="text-[11px] font-bold text-[var(--accent)] hover:opacity-80 flex items-center gap-0.5">
+ <i data-lucide="plus" class="w-3 h-3"></i> 시작 상황 추가
+ </button>
  </div>
- <textarea
- id="create-start-context"
- rows="3"
- placeholder="AI에게만 백그라운드로 주입되는 초기 상황 디렉팅"
- class="w-full bg-[var(--bg)] border border-[var(--border)]/30 rounded-xl px-3.5 py-2.5 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] font-mono leading-relaxed"
- ></textarea>
+ <div id="create-scenarios-list" class="space-y-3"></div>
  </div>
 
  <button
@@ -336,6 +348,7 @@
  </form>
  </div>
 
+ <!-- (VIEW 4) 페르소나 설정 -->
  <div id="view-personas" class="hidden p-4 sm:p-8 max-w-4xl mx-auto w-full space-y-6">
  <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]/30">
  <div>
@@ -350,6 +363,7 @@
  <div id="personas-list-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
  </div>
 
+ <!-- (VIEW 5) 채팅 목록 -->
  <div id="view-chats" class="hidden p-4 sm:p-8 max-w-4xl mx-auto w-full space-y-5">
  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border)]/30">
  <div>
@@ -371,16 +385,18 @@
  <div id="active-chats-list" class="space-y-2"></div>
  </div>
 
+ <!-- (VIEW 6) 1:1 카카오톡 UI 채팅방 -->
  <div id="view-chatroom" class="hidden fixed inset-0 z-50 flex justify-center items-center bg-black/70 backdrop-blur-sm sm:static sm:z-auto sm:bg-transparent sm:flex-1 sm:h-screen sm:py-4 overflow-hidden">
  <div id="kakao-container" class="w-full h-full sm:max-w-md sm:h-full sm:rounded-3xl flex flex-col bg-[#A0C0D6] shadow-2xl relative overflow-hidden transition-colors duration-200">
  
+ <!-- 카톡 상단 고정 헤더 -->
  <div id="kakao-header" class="flex items-center justify-between px-3.5 py-2.5 border-b border-black/5 bg-[#A0C0D6] select-none z-20 shrink-0 transition-colors duration-200">
  <div class="flex items-center gap-2 overflow-hidden flex-1 min-w-0 pr-2">
  <button onclick="navigate('chats')" class="p-1.5 hover:bg-black/10 rounded-lg transition text-slate-800 shrink-0" id="kakao-back-btn">
  <i data-lucide="chevron-left" class="w-5 h-5"></i>
  </button>
  <div class="overflow-hidden min-w-0">
- <h2 id="room-header-title" class="font-bold text-sm leading-tight text-slate-900 truncate">대화방</h2>
+ <h2 id="room-header-title" class="font-bold text-sm leading-tight text-slate-900 truncate">캐릭터</h2>
  </div>
  </div>
 
@@ -395,6 +411,7 @@
  </div>
  </div>
 
+ <!-- 북마크 모아보기 패널 -->
  <div id="bookmark-panel" class="hidden absolute inset-0 z-40 flex flex-col bg-[var(--bg)]">
  <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--border)] shrink-0">
  <div class="flex items-center gap-1">
@@ -411,6 +428,7 @@
  <div id="bookmark-list" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
  </div>
 
+ <!-- 리롤 지시사항 입력 모달 -->
  <div id="reroll-modal" class="hidden absolute inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
  <div class="bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-4 w-full max-w-xs space-y-3 shadow-2xl">
  <h3 class="font-bold text-sm text-[var(--ink)] flex items-center gap-1.5">
@@ -425,6 +443,7 @@
  </div>
  </div>
 
+ <!-- 기억(요약) 관리 패널 -->
  <div id="memory-panel" class="hidden absolute inset-0 z-40 flex flex-col bg-[var(--bg)]">
  <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--border)] shrink-0">
  <div class="flex items-center gap-1">
@@ -439,7 +458,7 @@
  </button>
  </div>
  <div class="flex-1 overflow-y-auto p-4 space-y-3">
- <p class="text-[10px] text-[var(--muted)] leading-relaxed">대화가 10턴마다 오래된 부분을 자동으로 압축 요약해요. 토큰을 아끼면서도 캐릭터가 중요한 서사를 기억하도록 유지합니다.</p>
+ <p class="text-[10px] text-[var(--muted)] leading-relaxed">대화가 길어지면 오래된 부분을 압축 요약해서 매번 전체 로그를 보내지 않도록 해요. 토큰(비용)을 아끼면서도 캐릭터가 이전 대화를 기억하도록 유지합니다.</p>
  <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 text-[10px] text-[var(--muted)] space-y-1">
  <div id="memory-panel-count">-</div>
  <div id="memory-panel-updated">-</div>
@@ -452,6 +471,7 @@
  </div>
  </div>
 
+ <!-- 채팅방 햄버거 메뉴 -->
  <div id="room-menu-panel" class="hidden absolute inset-0 z-30 flex flex-col bg-[var(--bg)]">
  <div class="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--border)] shrink-0">
  <h3 class="font-bold text-sm text-[var(--ink)]">채팅방 메뉴</h3>
@@ -463,7 +483,7 @@
  <div class="flex-1 overflow-y-auto p-4 space-y-5">
 
  <div class="flex items-center gap-3">
- <img id="room-menu-avatar" src="" alt="캐릭터" class="w-11 h-11 rounded-[14px] object-cover border border-[var(--border)] shrink-0 shadow-sm" />
+ <img id="room-menu-avatar" src="" alt="캐릭터" class="w-11 h-11 rounded-full object-cover border border-[var(--border)] shrink-0" />
  <div class="min-w-0">
  <div id="room-menu-char-name" class="font-bold text-sm text-[var(--ink)] truncate">캐릭터</div>
  <div class="text-[10px] text-[var(--muted)]">1:1 대화방</div>
@@ -520,12 +540,14 @@
  </div>
  </div>
 
+ <!-- 카톡 메시지 스크롤 영역 -->
  <div id="kakao-messages" class="flex-1 overflow-y-auto p-4 space-y-3.5 text-sm overscroll-y-contain"></div>
 
+ <!-- 카톡 하단 고정 입력 바 -->
  <div id="kakao-input-bar" class="p-2.5 bg-white border-t border-slate-200 shrink-0 z-20 transition-colors duration-200">
  <div id="chat-image-preview" class="hidden items-center gap-2 mb-2 px-1">
  <div class="relative">
- <img id="chat-image-preview-thumb" src="" alt="첨부 이미지 미리보기" class="w-12 h-12 rounded-[12px] object-cover border border-black/10 shadow-sm" />
+ <img id="chat-image-preview-thumb" src="" alt="첨부 이미지 미리보기" class="w-12 h-12 rounded-lg object-cover border border-black/10" />
  <button onclick="removePendingImage()" title="첨부 취소" class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center">
  <i data-lucide="x" class="w-2.5 h-2.5"></i>
  </button>
@@ -567,6 +589,7 @@
  </div>
  </div>
 
+ <!-- ================= 3. 모바일 하단 네비게이션 바 ================= -->
  <nav id="mobile-bottom-nav" class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg)]/95 backdrop-blur-lg border-t border-[var(--border)]/30 px-2 py-1.5 flex justify-around items-center transition-all duration-300">
  <button onclick="navigate('dashboard')" id="m-nav-dashboard" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[var(--accent)] font-bold transition">
  <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
@@ -586,6 +609,7 @@
  </button>
  </nav>
 
+ <!-- ================= 4. 모달들 ================= -->
  <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 z-50 cursor-pointer" onclick="closeLightbox()">
  <div class="relative max-w-lg max-h-[85vh] overflow-hidden rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
  <img id="lightbox-img" src="" class="w-full h-full object-contain" />
@@ -595,16 +619,69 @@
  </div>
  </div>
 
- <div id="drafts-list-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
- <div class="bg-[var(--card)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-md space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
- <div class="flex justify-between items-center shrink-0">
- <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
- <i data-lucide="folder-open" class="w-4 h-4 text-[var(--accent)]"></i> 임시저장 목록
- </h3>
- <button onclick="closeDraftsListModal()" class="text-[var(--muted)] hover:text-[var(--ink)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+ <!-- 캐릭터 상세정보 모달 (이미지가 내부 카드 형태로 들어가고 함께 스크롤됨) -->
+ <div id="character-detail-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--card)] border border-[var(--border)]/40 rounded-3xl w-full max-w-sm shadow-2xl max-h-[90vh] flex flex-col overflow-hidden relative">
+ 
+ <!-- 모달 상단 고정 바 (뒤로가기, 좋아요 버튼) -->
+ <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]/30 shrink-0 bg-[var(--card)]/90 backdrop-blur-md z-10">
+ <button onclick="closeCharacterDetailModal()" class="p-1.5 rounded-xl hover:bg-[var(--fill-muted)] text-[var(--ink)] transition" title="닫기">
+ <i data-lucide="chevron-left" class="w-5 h-5"></i>
+ </button>
+ <div class="flex items-center gap-1">
+ <button onclick="toggleLikeCharacter()" id="detail-like-btn" class="p-2 rounded-xl transition hover:bg-[var(--fill-muted)] text-[var(--ink)]" title="좋아요">
+ <i data-lucide="heart" class="w-4 h-4"></i>
+ </button>
  </div>
- <div class="text-xs text-[var(--muted)] shrink-0">저장해 둔 캐릭터 초안들을 불러오거나 삭제할 수 있어요.</div>
- <div id="drafts-container" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+ </div>
+
+ <!-- 스크롤 영역 (이미지가 내부에 포함되어 함께 위로 스크롤됨) -->
+ <div class="flex-1 overflow-y-auto min-h-0 p-5 space-y-4">
+ 
+ <!-- 안쪽으로 배치된 세로형 캐릭터 이미지 (클릭 시 라이트박스 확대) -->
+ <div class="flex justify-center pt-1">
+ <div class="w-48 aspect-[2/3] rounded-2xl overflow-hidden shadow-md border border-[var(--border)]/40 cursor-pointer group relative" onclick="openLightbox(document.getElementById('detail-avatar').src)">
+ <img id="detail-avatar" src="" alt="캐릭터 이미지" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+ <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+ <i data-lucide="maximize-2" class="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow"></i>
+ </div>
+ </div>
+ </div>
+
+ <div class="text-center pb-2 border-b border-[var(--border)]/30">
+ <h2 id="detail-name" class="text-lg font-black text-[var(--ink)]"></h2>
+ <p id="detail-intro" class="text-xs text-[var(--muted)] mt-1"></p>
+ <p id="detail-author" class="text-[11px] text-[var(--muted)] mt-1.5 font-medium"></p>
+ <div class="flex items-center justify-center gap-1 mt-2.5 text-[11px] text-[var(--muted)] font-medium">
+ <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+ <span id="detail-user-msg-count" class="font-bold text-[var(--ink)]">0개</span>
+ <span class="mx-0.5">채팅</span>
+ </div>
+ </div>
+
+ <div>
+ <label class="block text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-1.5">소개 및 설명</label>
+ <p id="detail-description" class="text-xs text-[var(--ink)] leading-relaxed bg-[var(--bg)] border border-[var(--border)] rounded-xl p-3 min-h-[48px]"></p>
+ </div>
+ <div>
+ <label class="block text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-1.5">프롤로그 미리보기</label>
+ <p id="detail-prologue" class="text-xs text-[var(--ink)] leading-relaxed bg-[var(--bg)] border border-[var(--border)] rounded-xl p-3 italic"></p>
+ </div>
+ <div class="flex items-center justify-between text-[11px] text-[var(--muted)] pt-1">
+ <span>업데이트 버전</span>
+ <span id="detail-version" class="font-bold text-[var(--ink)] font-mono"></span>
+ </div>
+ <div class="flex items-center justify-between text-[11px] text-[var(--muted)]">
+ <span>등록일</span>
+ <span id="detail-created" class="font-bold text-[var(--ink)] font-mono"></span>
+ </div>
+ </div>
+
+ <div class="p-3.5 border-t border-[var(--border)] shrink-0 flex items-center gap-2 bg-[var(--card)]">
+ <select id="detail-persona-select" title="시작 페르소나" class="bg-[var(--bg)] border border-[var(--border)] text-[var(--ink)] rounded-xl px-2 py-2.5 text-xs focus:outline-none focus:border-[var(--accent)] shrink-0 max-w-[92px]"></select>
+ <button onclick="continueChatFromDetail()" class="flex-1 py-2.5 text-xs font-bold rounded-xl border border-[var(--border)] text-[var(--ink)] hover:border-[var(--accent)] transition">이어하기</button>
+ <button onclick="startChatFromDetail()" class="flex-1 py-2.5 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition">대화 시작</button>
+ </div>
  </div>
  </div>
 
@@ -621,6 +698,10 @@
  <button onclick="closeCharacterSessionModal()" class="text-[var(--muted)] hover:text-[var(--ink)]"><i data-lucide="x" class="w-4 h-4"></i></button>
  </div>
  <div class="space-y-2">
+ <div id="session-modal-scenario-wrap" class="hidden">
+ <label class="block text-[10px] font-bold text-[var(--muted)] mb-1.5">시작 상황 선택</label>
+ <select id="session-modal-scenario-select" class="w-full bg-[var(--bg)] border border-[var(--border)] text-[var(--ink)] rounded-xl px-3 py-2 text-xs mb-2 focus:outline-none focus:border-[var(--accent)]"></select>
+ </div>
  <button onclick="startNewChatSession()" class="w-full py-2.5 bg-[var(--accent)] hover:opacity-90 text-[var(--accent-text)] text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm">
  <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
  <span>+ 새로운 대화방 파기</span>
@@ -651,7 +732,7 @@
  <div>
  <label class="block text-[11px] font-bold text-[var(--ink)] mb-1">페르소나 프로필 사진</label>
  <div class="flex items-center gap-3">
- <div class="w-12 h-12 rounded-[14px] bg-[var(--bg)] border border-[var(--border)]/30 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer shadow-sm" onclick="openLightbox(document.getElementById('persona-preview-img').src)">
+ <div class="w-12 h-12 rounded-xl bg-[var(--bg)] border border-[var(--border)]/30 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer" onclick="openLightbox(document.getElementById('persona-preview-img').src)">
  <img id="persona-preview-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=user_default" class="w-full h-full object-cover" />
  </div>
  <div class="flex-1">
@@ -796,6 +877,7 @@
  </div>
  </div>
 
+ <!-- 캐릭터 등록 중 이탈 시 저장 확인 모달 -->
  <div id="unsaved-changes-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
  <div class="bg-[var(--card)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-sm space-y-4 shadow-2xl">
  <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
@@ -807,6 +889,19 @@
  <button onclick="confirmDiscardAndLeave()" class="w-full py-2.5 text-xs border border-[var(--border)] text-[var(--muted)] hover:text-rose-500 hover:border-rose-500/40 font-bold rounded-xl transition">저장 안 하고 나가기</button>
  <button onclick="closeUnsavedChangesModal()" class="w-full py-2 text-xs text-[var(--muted)] hover:text-[var(--ink)]">취소 (계속 작성하기)</button>
  </div>
+ </div>
+ </div>
+
+ <!-- 임시저장 목록 모달 -->
+ <div id="draft-list-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+ <div class="bg-[var(--card)] border border-[var(--border)]/40 p-6 rounded-3xl w-full max-w-md space-y-4 shadow-2xl max-h-[80vh] flex flex-col">
+ <div class="flex justify-between items-center shrink-0">
+ <h3 class="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+ <i data-lucide="archive" class="w-4 h-4 text-[var(--accent)]"></i> 임시저장 목록
+ </h3>
+ <button onclick="closeDraftListModal()" class="text-[var(--muted)] hover:text-[var(--ink)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+ </div>
+ <div id="draft-list-items" class="flex-1 overflow-y-auto space-y-2"></div>
  </div>
  </div>
 
@@ -879,6 +974,7 @@
  renderPersonaList();
  renderActiveChatsList();
  checkCharacterDraft();
+ resetScenarioList();
  lucide.createIcons();
  });
 
@@ -1038,8 +1134,10 @@
  }
 
  function hasUnsavedCharacterFormContent() {
- const ids = ['create-name', 'create-intro', 'create-prompt', 'create-start-title', 'create-greeting', 'create-start-context'];
- return ids.some(id => (document.getElementById(id)?.value || '').trim().length > 0) || !!currentUploadedAvatarBase64;
+ const ids = ['create-name', 'create-intro', 'create-author', 'create-version', 'create-description', 'create-prompt'];
+ const hasFieldContent = ids.some(id => (document.getElementById(id)?.value || '').trim().length > 0);
+ const hasScenarioContent = collectScenariosFromForm().some(sc => sc.title || sc.greeting || sc.startContext);
+ return hasFieldContent || hasScenarioContent || !!currentUploadedAvatarBase64;
  }
 
  function openUnsavedChangesModal() {
@@ -1121,10 +1219,7 @@
 
  if (viewName === 'dashboard') updateDashboardStats();
  if (viewName === 'characters') renderCharacterFeed();
- if (viewName === 'create') {
- checkCharacterDraft();
- document.getElementById('editing-draft-id').value = '';
- }
+ if (viewName === 'create') checkCharacterDraft();
  if (viewName === 'personas') renderPersonaList();
  if (viewName === 'chats') renderActiveChatsList();
  if (viewName === 'chatroom' && params.sessionId) {
@@ -1284,7 +1379,7 @@
  <div class="bg-[var(--card)] border border-[var(--border)]/30 p-4 rounded-2xl flex flex-col justify-between space-y-3 shadow-sm">
  <div>
  <div class="flex items-center gap-3">
- <div class="w-12 h-12 rounded-[14px] bg-[var(--bg)] border border-[var(--border)]/30 overflow-hidden shrink-0 cursor-pointer shadow-sm" onclick="openLightbox('${avatarSrc}')">
+ <div class="w-12 h-12 rounded-xl bg-[var(--bg)] border border-[var(--border)]/30 overflow-hidden shrink-0 cursor-pointer" onclick="openLightbox('${avatarSrc}')">
  <img src="${avatarSrc}" class="w-full h-full object-cover" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
  </div>
  <div class="overflow-hidden flex-1">
@@ -1417,7 +1512,7 @@
  <i data-lucide="trash-2" class="w-3 h-3"></i>
  </button>
 
- <div onclick="openCharacterSessionChooser('${char.id}')" class="cursor-pointer flex-1 flex flex-col">
+ <div onclick="openCharacterDetailModal('${char.id}')" class="cursor-pointer flex-1 flex flex-col">
  <div class="w-full aspect-[2/3] bg-[var(--bg)] overflow-hidden relative" onclick="event.stopPropagation(); openLightbox('${avatarSrc}');">
  <img src="${avatarSrc}" alt="${char.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -1428,7 +1523,7 @@
  </div>
 
  <div class="px-3 py-2 sm:px-4 sm:py-2.5 flex justify-between items-center text-[10px] sm:text-[11px]">
- <span class="text-[var(--muted)] font-medium">by ${char.author || '주인님'}</span>
+ <span class="text-[var(--muted)] flex items-center gap-1 font-medium"><i data-lucide="user" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i> ${escapeHtml(char.author || '주인님')}</span>
  <span class="text-[var(--accent)] font-bold group-hover:translate-x-0.5 transition">입장 →</span>
  </div>
  </div>
@@ -1463,6 +1558,81 @@
  }
  }
 
+ // ---- 시작 상황 (여러 개, 최소 1개) ----
+ let scenarioBlockSeq = 0;
+
+ function createScenarioBlockHTML(seq, data = {}) {
+ return `
+ <div class="scenario-block bg-[var(--bg)] border border-[var(--border)]/30 rounded-2xl p-3.5 space-y-2.5" data-seq="${seq}">
+ <div class="flex items-center justify-between">
+ <span class="text-[10px] font-bold text-[var(--muted)]">시작 상황 #${seq}</span>
+ <button type="button" onclick="removeScenarioBlock(${seq})" class="scenario-remove-btn text-[10px] text-[var(--muted)] hover:text-rose-500 flex items-center gap-0.5">
+ <i data-lucide="trash-2" class="w-3 h-3"></i> 삭제
+ </button>
+ </div>
+ <input type="text" class="scenario-title w-full bg-[var(--card)] border border-[var(--border)]/30 rounded-lg px-3 py-2 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]" placeholder="시작설정 이름 (예: 기본 루트, 비 내리는 날의 도서관)" value="${escapeHtml(data.title || '')}" />
+ <textarea class="scenario-greeting w-full bg-[var(--card)] border border-[var(--border)]/30 rounded-lg px-3 py-2 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] resize-none" rows="2" placeholder="프롤로그 (첫인사 메시지)">${escapeHtml(data.greeting || '')}</textarea>
+ <textarea class="scenario-context w-full bg-[var(--card)] border border-[var(--border)]/30 rounded-lg px-3 py-2 text-xs text-[var(--ink)] focus:outline-none focus:border-[var(--accent)] font-mono leading-relaxed" rows="2" placeholder="🔒 AI에게만 주입되는 초기 상황 디렉팅 (선택)">${escapeHtml(data.startContext || '')}</textarea>
+ </div>
+ `;
+ }
+
+ function addScenarioBlock(data = {}) {
+ scenarioBlockSeq += 1;
+ const list = document.getElementById('create-scenarios-list');
+ list.insertAdjacentHTML('beforeend', createScenarioBlockHTML(scenarioBlockSeq, data));
+ updateScenarioRemoveButtons();
+ lucide.createIcons();
+ }
+
+ function removeScenarioBlock(seq) {
+ const list = document.getElementById('create-scenarios-list');
+ if (list.children.length <= 1) return;
+ const block = list.querySelector(`.scenario-block[data-seq="${seq}"]`);
+ if (block) block.remove();
+ updateScenarioRemoveButtons();
+ }
+
+ function updateScenarioRemoveButtons() {
+ const list = document.getElementById('create-scenarios-list');
+ const blocks = list.querySelectorAll('.scenario-block');
+ blocks.forEach(b => {
+ const btn = b.querySelector('.scenario-remove-btn');
+ if (btn) btn.style.display = blocks.length <= 1 ? 'none' : '';
+ });
+ }
+
+ function resetScenarioList(scenarios = null) {
+ const list = document.getElementById('create-scenarios-list');
+ list.innerHTML = '';
+ scenarioBlockSeq = 0;
+ if (scenarios && scenarios.length) {
+ scenarios.forEach(sc => addScenarioBlock(sc));
+ } else {
+ addScenarioBlock();
+ }
+ }
+
+ function collectScenariosFromForm() {
+ const blocks = document.querySelectorAll('#create-scenarios-list .scenario-block');
+ return Array.from(blocks).map((b, i) => ({
+ id: `scenario-${Date.now()}-${i}`,
+ title: b.querySelector('.scenario-title').value.trim(),
+ greeting: b.querySelector('.scenario-greeting').value.trim(),
+ startContext: b.querySelector('.scenario-context').value.trim()
+ }));
+ }
+
+ function getCharScenarios(char) {
+ if (char.startScenarios && char.startScenarios.length) return char.startScenarios;
+ return [{
+ id: 'legacy',
+ title: char.startTitle || '기본 루트',
+ greeting: char.greeting || '',
+ startContext: char.startContext || ''
+ }];
+ }
+
  function handleImageUpload(e, targetType) {
  const file = e.target.files[0];
  if (!file) return;
@@ -1481,137 +1651,119 @@
  }
 
  function saveCharacterDraft(silent = false) {
- const editingId = document.getElementById('editing-draft-id').value;
- let drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
-
- const draftData = {
- id: editingId || `draft-${Date.now()}`,
- name: document.getElementById('create-name').value || '이름 없는 캐릭터',
+ const draft = {
+ id: `draft-${Date.now()}`,
+ name: document.getElementById('create-name').value,
  avatarBase64: currentUploadedAvatarBase64,
  intro: document.getElementById('create-intro').value,
+ author: document.getElementById('create-author').value,
+ version: document.getElementById('create-version').value,
+ description: document.getElementById('create-description').value,
  prompt: document.getElementById('create-prompt').value,
- startTitle: document.getElementById('create-start-title').value,
- greeting: document.getElementById('create-greeting').value,
- startContext: document.getElementById('create-start-context').value,
- savedAt: new Date().toLocaleTimeString()
+ scenarios: collectScenariosFromForm(),
+ savedAt: new Date().toLocaleString('ko-KR')
  };
 
- if (editingId) {
- const idx = drafts.findIndex(d => d.id === editingId);
- if (idx !== -1) {
- drafts[idx] = draftData;
- } else {
- drafts.unshift(draftData);
- }
- } else {
- drafts.unshift(draftData);
- document.getElementById('editing-draft-id').value = draftData.id;
- }
-
- if (drafts.length > 10) drafts = drafts.slice(0, 10);
- localStorage.setItem('kolbom_character_drafts_list', JSON.stringify(drafts));
-
+ const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts') || '[]');
+ drafts.unshift(draft);
+ localStorage.setItem('kolbom_character_drafts', JSON.stringify(drafts));
+ updateDraftCountBadge();
  if (!silent) {
- alert(`[${draftData.savedAt}] 캐릭터 초안이 저장(덮어쓰기)되었습니다!`);
+ alert(`[${draft.savedAt}] 임시저장되었습니다. (임시저장 목록에서 확인할 수 있어요)`);
  }
  }
 
  function checkCharacterDraft() {
- const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
- const banner = document.getElementById('draft-alert-banner');
- if (drafts.length > 0 && banner) {
- banner.classList.remove('hidden');
- } else if (banner) {
- banner.classList.add('hidden');
- }
+ updateDraftCountBadge();
  }
 
- function openDraftsListModal() {
- const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
- const container = document.getElementById('drafts-container');
-
- if (drafts.length === 0) {
- container.innerHTML = `<div class="text-center text-xs text-[var(--muted)] py-8">저장된 임시 초안이 없습니다.</div>`;
+ function updateDraftCountBadge() {
+ const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts') || '[]');
+ const badge = document.getElementById('draft-count-badge');
+ if (!badge) return;
+ if (drafts.length > 0) {
+ badge.innerText = drafts.length;
+ badge.classList.remove('hidden');
  } else {
- container.innerHTML = drafts.map((d) => `
- <div class="bg-[var(--bg)] border border-[var(--border)]/40 p-3 rounded-xl flex items-center justify-between gap-2">
- <div class="min-w-0 flex-1 cursor-pointer" onclick="loadSpecificDraft('${d.id}')">
- <div class="font-bold text-xs text-[var(--ink)] truncate">${escapeHtml(d.name)}</div>
- <div class="text-[10px] text-[var(--muted)] truncate">${escapeHtml(d.intro || '소개 없음')} · ${d.savedAt}</div>
+ badge.classList.add('hidden');
+ }
+ }
+
+ function openDraftListModal() {
+ renderDraftList();
+ document.getElementById('draft-list-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeDraftListModal() {
+ document.getElementById('draft-list-modal').classList.add('hidden');
+ }
+
+ function renderDraftList() {
+ const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts') || '[]');
+ const container = document.getElementById('draft-list-items');
+ if (drafts.length === 0) {
+ container.innerHTML = `<div class="text-center text-xs text-[var(--muted)] py-10">임시저장된 캐릭터가 없어요.</div>`;
+ return;
+ }
+ container.innerHTML = drafts.map(d => `
+ <div class="flex items-center gap-3 bg-[var(--bg)] border border-[var(--border)] rounded-xl p-3">
+ <img src="${d.avatarBase64 || DEFAULT_FALLBACK_AVATAR}" class="w-10 h-10 rounded-lg object-cover border border-[var(--border)]/40 shrink-0" />
+ <div class="min-w-0 flex-1">
+ <div class="text-xs font-bold text-[var(--ink)] truncate">${escapeHtml(d.name || '(이름 없음)')}</div>
+ <div class="text-[10px] text-[var(--muted)] mt-0.5">${d.savedAt}</div>
  </div>
- <div class="flex items-center gap-1 shrink-0">
- <button onclick="loadSpecificDraft('${d.id}')" class="px-2.5 py-1 text-[11px] font-bold bg-[var(--accent)] text-[var(--accent-text)] rounded-lg">불러오기</button>
- <button onclick="deleteSpecificDraft('${d.id}')" class="p-1 text-[var(--muted)] hover:text-rose-500 rounded"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+ <div class="flex gap-1.5 shrink-0">
+ <button onclick="loadCharacterDraftById('${d.id}')" class="px-2.5 py-1 text-[11px] font-bold bg-[var(--accent)] text-[var(--accent-text)] rounded-lg">불러오기</button>
+ <button onclick="deleteDraftById('${d.id}')" class="px-2.5 py-1 text-[11px] text-[var(--muted)] hover:text-rose-500 rounded-lg">삭제</button>
  </div>
  </div>
  `).join('');
  }
 
- document.getElementById('drafts-list-modal').classList.remove('hidden');
- lucide.createIcons();
+ function loadCharacterDraftById(id) {
+ const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts') || '[]');
+ const draft = drafts.find(d => d.id === id);
+ if (!draft) return;
+
+ document.getElementById('create-name').value = draft.name || '';
+ document.getElementById('create-intro').value = draft.intro || '';
+ document.getElementById('create-author').value = draft.author || '';
+ document.getElementById('create-version').value = draft.version || '';
+ document.getElementById('create-description').value = draft.description || '';
+ document.getElementById('create-prompt').value = draft.prompt || '';
+ resetScenarioList(draft.scenarios && draft.scenarios.length ? draft.scenarios : null);
+
+ if (draft.avatarBase64) {
+ currentUploadedAvatarBase64 = draft.avatarBase64;
+ document.getElementById('preview-img').src = draft.avatarBase64;
+ } else {
+ currentUploadedAvatarBase64 = '';
+ document.getElementById('preview-img').src = DEFAULT_FALLBACK_AVATAR;
  }
 
- function closeDraftsListModal() {
- document.getElementById('drafts-list-modal').classList.add('hidden');
+ closeDraftListModal();
+ alert('임시저장된 내용을 불러왔습니다.');
  }
 
- function loadSpecificDraft(draftId) {
- const drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
- const target = drafts.find(d => d.id === draftId);
- if (!target) return;
-
- document.getElementById('editing-draft-id').value = target.id;
- document.getElementById('create-name').value = target.name || '';
- document.getElementById('create-intro').value = target.intro || '';
- document.getElementById('create-prompt').value = target.prompt || '';
- document.getElementById('create-start-title').value = target.startTitle || '';
- document.getElementById('create-greeting').value = target.greeting || '';
- document.getElementById('create-start-context').value = target.startContext || '';
-
- if (target.avatarBase64) {
- currentUploadedAvatarBase64 = target.avatarBase64;
- document.getElementById('preview-img').src = target.avatarBase64;
- }
-
- closeDraftsListModal();
- alert(`"${target.name}" 초안을 불러왔습니다. (이후 임시저장 시 이 파일에 덮어쓰기 됩니다.)`);
- }
-
- function deleteSpecificDraft(draftId) {
- let drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
- drafts = drafts.filter(d => d.id !== draftId);
- localStorage.setItem('kolbom_character_drafts_list', JSON.stringify(drafts));
- 
- const currentEditingId = document.getElementById('editing-draft-id').value;
- if (currentEditingId === draftId) {
- document.getElementById('editing-draft-id').value = '';
- }
-
- openDraftsListModal();
- checkCharacterDraft();
- }
-
- function loadCharacterDraft() {
- openDraftsListModal();
- }
-
- function clearCharacterDraft() {
- if (confirm('모든 임시저장 초안을 삭제하시겠습니까?')) {
- localStorage.removeItem('kolbom_character_drafts_list');
- document.getElementById('editing-draft-id').value = '';
- closeDraftsListModal();
- }
+ function deleteDraftById(id) {
+ if (!confirm('이 임시저장 내용을 삭제할까요?')) return;
+ let drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts') || '[]');
+ drafts = drafts.filter(d => d.id !== id);
+ localStorage.setItem('kolbom_character_drafts', JSON.stringify(drafts));
+ renderDraftList();
+ updateDraftCountBadge();
  }
 
  function handleCreateCharacter(e) {
  e.preventDefault();
  const name = document.getElementById('create-name').value.trim();
  const intro = document.getElementById('create-intro').value.trim();
+ const author = document.getElementById('create-author').value.trim();
+ const version = document.getElementById('create-version').value.trim();
+ const description = document.getElementById('create-description').value.trim();
  const systemPrompt = document.getElementById('create-prompt').value.trim();
- const startTitle = document.getElementById('create-start-title').value.trim();
- const greeting = document.getElementById('create-greeting').value.trim();
- const startContext = document.getElementById('create-start-context').value.trim();
- const editingDraftId = document.getElementById('editing-draft-id').value;
+ const scenarios = collectScenariosFromForm();
 
  const finalAvatar = currentUploadedAvatarBase64 || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`;
 
@@ -1620,30 +1772,114 @@
  name,
  avatar: finalAvatar,
  intro,
+ description,
  systemPrompt,
- startTitle: startTitle || '기본 루트',
- greeting,
- startContext,
- author: localStorage.getItem('user_profile_nickname') || '주인님'
+ startScenarios: scenarios,
+ author: author || localStorage.getItem('user_profile_nickname') || '주인님',
+ version: version || 'V1.0',
+ createdAt: Date.now()
  };
 
  const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
  chars.unshift(newChar);
  localStorage.setItem('crack_characters', JSON.stringify(chars));
 
- if (editingDraftId) {
- let drafts = JSON.parse(localStorage.getItem('kolbom_character_drafts_list') || '[]');
- drafts = drafts.filter(d => d.id !== editingDraftId);
- localStorage.setItem('kolbom_character_drafts_list', JSON.stringify(drafts));
- }
-
- document.getElementById('editing-draft-id').value = '';
  currentUploadedAvatarBase64 = '';
  document.getElementById('preview-img').src = DEFAULT_FALLBACK_AVATAR;
+ resetScenarioList();
 
  alert(`"${name}" 캐릭터가 성공적으로 등록되었습니다!`);
  e.target.reset();
  navigate('characters');
+ }
+
+ let selectedCharForDetailModal = null;
+ let pendingPersonaOverride = null;
+
+ function openCharacterDetailModal(charId) {
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const char = chars.find(c => c.id === charId);
+ if (!char) return;
+ selectedCharForDetailModal = char;
+
+ document.getElementById('detail-avatar').src = char.avatar || DEFAULT_FALLBACK_AVATAR;
+ document.getElementById('detail-name').innerText = char.name;
+ document.getElementById('detail-intro').innerText = char.intro || '등록된 소개가 없습니다.';
+ document.getElementById('detail-author').innerText = `by ${char.author || '주인님'}`;
+
+ // 해당 캐릭터와 나눈 모든 방에서 "유저가 보낸 메시지(role === 'user')"의 총 합산 카운트
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const charSessions = sessions.filter(s => s.characterId === charId);
+ let totalUserMessages = 0;
+ charSessions.forEach(s => {
+   const hist = JSON.parse(localStorage.getItem(`chat_history_${s.id}`) || '[]');
+   totalUserMessages += hist.filter(m => m.role === 'user').length;
+ });
+ document.getElementById('detail-user-msg-count').innerText = `${totalUserMessages.toLocaleString()}개`;
+
+ document.getElementById('detail-description').innerText = char.description || char.intro || '등록된 설명이 없습니다.';
+ const scenarios = getCharScenarios(char);
+ document.getElementById('detail-prologue').innerText = scenarios[0]?.greeting || '등록된 프롤로그가 없습니다.';
+ document.getElementById('detail-version').innerText = char.version || 'V1.0';
+ document.getElementById('detail-created').innerText = char.createdAt ? new Date(char.createdAt).toLocaleDateString('ko-KR') : '-';
+
+ const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
+ const personaSelect = document.getElementById('detail-persona-select');
+ personaSelect.innerHTML = personas.map(p => `<option value="${p.id}">👤 ${escapeHtml(p.name)}</option>`).join('');
+
+ updateLikeButtonUI(charId);
+
+ document.getElementById('character-detail-modal').classList.remove('hidden');
+ lucide.createIcons();
+ }
+
+ function closeCharacterDetailModal() {
+ document.getElementById('character-detail-modal').classList.add('hidden');
+ }
+
+ function toggleLikeCharacter() {
+ if (!selectedCharForDetailModal) return;
+ const charId = selectedCharForDetailModal.id;
+ let liked = JSON.parse(localStorage.getItem('kolbom_liked_characters') || '[]');
+ if (liked.includes(charId)) {
+ liked = liked.filter(id => id !== charId);
+ } else {
+ liked.push(charId);
+ }
+ localStorage.setItem('kolbom_liked_characters', JSON.stringify(liked));
+ updateLikeButtonUI(charId);
+ }
+
+ function updateLikeButtonUI(charId) {
+ const liked = JSON.parse(localStorage.getItem('kolbom_liked_characters') || '[]');
+ const isLiked = liked.includes(charId);
+ const btn = document.getElementById('detail-like-btn');
+ if (!btn) return;
+ btn.className = 'p-2 rounded-xl transition hover:bg-[var(--fill-muted)] ' + (isLiked ? 'text-rose-500' : 'text-[var(--ink)]');
+ btn.innerHTML = `<i data-lucide="heart" class="w-4 h-4"${isLiked ? ' style="fill:currentColor"' : ''}></i>`;
+ lucide.createIcons();
+ }
+
+ function startChatFromDetail() {
+ if (!selectedCharForDetailModal) return;
+ const charId = selectedCharForDetailModal.id;
+ const personaSelect = document.getElementById('detail-persona-select');
+ pendingPersonaOverride = personaSelect && personaSelect.value ? personaSelect.value : null;
+ closeCharacterDetailModal();
+ openCharacterSessionChooser(charId);
+ }
+
+ function continueChatFromDetail() {
+ if (!selectedCharForDetailModal) return;
+ const charId = selectedCharForDetailModal.id;
+ const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
+ const charSessions = sessions.filter(s => s.characterId === charId);
+ closeCharacterDetailModal();
+ if (charSessions.length > 0) {
+ navigate('chatroom', { sessionId: charSessions[0].id });
+ } else {
+ openCharacterSessionChooser(charId);
+ }
  }
 
  function openCharacterSessionChooser(charId) {
@@ -1655,6 +1891,16 @@
  document.getElementById('session-modal-name').innerText = char.name;
  document.getElementById('session-modal-avatar').src = char.avatar || DEFAULT_FALLBACK_AVATAR;
 
+ const scenarios = getCharScenarios(char);
+ const scenarioWrap = document.getElementById('session-modal-scenario-wrap');
+ const scenarioSelect = document.getElementById('session-modal-scenario-select');
+ if (scenarios.length > 1) {
+ scenarioSelect.innerHTML = scenarios.map(sc => `<option value="${sc.id}">${escapeHtml(sc.title || '시작 상황')}</option>`).join('');
+ scenarioWrap.classList.remove('hidden');
+ } else {
+ scenarioWrap.classList.add('hidden');
+ }
+
  const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
  const charSessions = sessions.filter(s => s.characterId === charId);
  const listContainer = document.getElementById('session-modal-existing-list');
@@ -1662,23 +1908,26 @@
  if (charSessions.length === 0) {
  listContainer.innerHTML = `<p class="text-[11px] text-[var(--muted)] py-3 text-center">아직 열린 대화방이 없습니다.</p>`;
  } else {
- listContainer.innerHTML = charSessions.map((s) => `
+ listContainer.innerHTML = charSessions.map((s) => {
+   const displayTitle = s.isCustomTitle ? s.title : (char.name || '대화방');
+   return `
  <div class="group/item p-2.5 rounded-2xl bg-[var(--bg)]/90 border border-[var(--border)]/30 hover:border-[var(--accent)] flex items-center justify-between transition">
  <div onclick="openSpecificSession('${s.id}')" class="cursor-pointer overflow-hidden flex-1 pr-2">
  <div class="flex items-center gap-1.5">
- <span class="text-xs font-bold text-[var(--ink)] truncate">${escapeHtml(s.title || '대화방')}</span>
+ <span class="text-xs font-bold text-[var(--ink)] truncate">${escapeHtml(displayTitle)}</span>
  </div>
  <span class="text-[10px] text-[var(--muted)] truncate block mt-0.5">${escapeHtml(s.lastMessage || '대화 없음')}</span>
  </div>
  
  <div class="flex items-center gap-1.5 shrink-0">
  <span class="text-[9px] font-mono text-[var(--muted)]">${s.lastTime || ''}</span>
- <button onclick="openRenameSessionModal(event, '${s.id}', '${escapeHtml(s.title || '대화방')}')" title="방 이름 수정" class="p-1 text-[var(--muted)] hover:text-[var(--ink)] rounded hover:bg-[var(--card)] transition">
+ <button onclick="openRenameSessionModal(event, '${s.id}', '${escapeHtml(displayTitle)}')" title="방 이름 수정" class="p-1 text-[var(--muted)] hover:text-[var(--ink)] rounded hover:bg-[var(--card)] transition">
  <i data-lucide="edit-2" class="w-3 h-3"></i>
  </button>
  </div>
  </div>
- `).join('');
+ `;
+ }).join('');
  }
 
  document.getElementById('character-session-modal').classList.remove('hidden');
@@ -1695,19 +1944,29 @@
  const models = JSON.parse(localStorage.getItem('user_registered_models') || '[]');
  const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
 
+ const scenarios = getCharScenarios(char);
+ const scenarioSelect = document.getElementById('session-modal-scenario-select');
+ const chosenScenarioId = (scenarios.length > 1 && scenarioSelect) ? scenarioSelect.value : scenarios[0].id;
+ const scenario = scenarios.find(sc => sc.id === chosenScenarioId) || scenarios[0];
+
+ const chosenPersonaId = (pendingPersonaOverride && personas.some(p => p.id === pendingPersonaOverride))
+ ? pendingPersonaOverride
+ : (personas[0]?.id || '');
+ pendingPersonaOverride = null;
+
  const newSessionId = `session-${Date.now()}`;
  const sessions = JSON.parse(localStorage.getItem('kolbom_chat_sessions') || '[]');
- 
- const sessionCountForChar = sessions.filter(s => s.characterId === char.id).length;
 
  const newSession = {
  id: newSessionId,
  characterId: char.id,
  folderId: null,
- title: sessionCountForChar === 0 ? (char.startTitle || '기본 루트') : `${char.startTitle || '대화방'} #${sessionCountForChar + 1}`,
- personaId: personas[0]?.id || '',
+ title: char.name || '대화방',
+ isCustomTitle: false,
+ personaId: chosenPersonaId,
  modelId: models[0]?.id || '',
- lastMessage: char.greeting,
+ startContext: scenario.startContext || '',
+ lastMessage: scenario.greeting,
  lastTime: getCurrentTime(),
  createdAt: Date.now()
  };
@@ -1715,7 +1974,7 @@
  sessions.unshift(newSession);
  localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
 
- const initMessages = [{ role: 'assistant', content: char.greeting, time: getCurrentTime() }];
+ const initMessages = [{ role: 'assistant', content: scenario.greeting, time: getCurrentTime() }];
  localStorage.setItem(`chat_history_${newSessionId}`, JSON.stringify(initMessages));
 
  closeCharacterSessionModal();
@@ -1748,6 +2007,7 @@
  const idx = sessions.findIndex(s => s.id === sessionId);
  if (idx !== -1) {
  sessions[idx].title = newTitle;
+ sessions[idx].isCustomTitle = true;
  localStorage.setItem('kolbom_chat_sessions', JSON.stringify(sessions));
  }
 
@@ -1768,8 +2028,11 @@
  function editRoomTitleFromHeader() {
  if (!currentSessionId) return;
  const session = getCurrentSession();
+ const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
+ const char = chars.find(c => c.id === session?.characterId);
+ const currentTitle = session ? (session.isCustomTitle ? session.title : (char?.name || '대화방')) : '대화방';
  if (session) {
- openRenameSessionModal(null, session.id, session.title || '대화방');
+ openRenameSessionModal(null, session.id, currentTitle);
  }
  }
 
@@ -1924,6 +2187,7 @@
  ${filteredSessions.map(session => {
  const char = chars.find(c => c.id === session.characterId) || { name: '삭제된 캐릭터', avatar: DEFAULT_FALLBACK_AVATAR };
  const folderObj = folders.find(f => f.id === session.folderId);
+ const displayTitle = session.isCustomTitle ? session.title : char.name;
  
  return `
  <div class="flex items-center justify-between p-4 sm:p-5 hover:bg-[var(--card)]/50 transition group">
@@ -1932,7 +2196,7 @@
  <div class="overflow-hidden">
  <div class="flex items-center gap-2">
  <h3 class="font-bold text-sm text-[var(--ink)] transition">${char.name}</h3>
- <span class="text-[9px] px-1.5 py-0.2 bg-[var(--border)]/20 rounded font-mono text-[var(--muted)] truncate max-w-[120px]">${escapeHtml(session.title || '대화방')}</span>
+ ${session.isCustomTitle ? `<span class="text-[9px] px-1.5 py-0.2 bg-[var(--border)]/20 rounded font-mono text-[var(--muted)] truncate max-w-[120px]">${escapeHtml(session.title)}</span>` : ''}
  ${folderObj ? `<span class="text-[9px] px-1.5 py-0.2 bg-[var(--accent)]/15 text-[var(--accent)] rounded font-medium">📁 ${escapeHtml(folderObj.name)}</span>` : ''}
  </div>
  <p class="text-xs text-[var(--muted)] truncate mt-0.5 max-w-xs sm:max-w-md">${session.lastMessage || '대화 없음'}</p>
@@ -1946,7 +2210,7 @@
  <i data-lucide="folder-input" class="w-3.5 h-3.5"></i>
  </button>
 
- <button onclick="openRenameSessionModal(event, '${session.id}', '${escapeHtml(session.title || '대화방')}')" title="방 이름 수정" class="p-1.5 text-[var(--muted)] hover:text-[var(--ink)] rounded-lg hover:bg-[var(--card)]/50 transition">
+ <button onclick="openRenameSessionModal(event, '${session.id}', '${escapeHtml(displayTitle)}')" title="방 이름 수정" class="p-1.5 text-[var(--muted)] hover:text-[var(--ink)] rounded-lg hover:bg-[var(--card)]/50 transition">
  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
  </button>
 
@@ -2000,7 +2264,9 @@
  if (!char) return;
 
  const titleEl = document.getElementById('room-header-title');
- if (titleEl) titleEl.innerText = session.title || '대화방';
+ if (titleEl) {
+   titleEl.innerText = session.isCustomTitle ? session.title : (char.name || '캐릭터');
+ }
 
  const personas = JSON.parse(localStorage.getItem('user_personas') || '[]');
  const personaSelect = document.getElementById('menu-persona-select');
@@ -2085,6 +2351,7 @@
       const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
       const char = chars.find(c => c.id === session?.characterId);
       const messages = JSON.parse(localStorage.getItem(`chat_history_${currentSessionId}`) || '[]');
+      const activePersona = getActivePersonaForCurrentRoom();
       const container = document.getElementById('kakao-messages');
 
       container.innerHTML = messages.map((msg, index) => {
@@ -2097,29 +2364,46 @@
           : variants.length - 1;
         const displayContent = isUser ? msg.content : variants[activeVariantIdx];
 
-        if (isUser) {
-          return `
-            <div class="flex flex-col items-end gap-1 relative group w-full mb-1">
-              <div class="flex justify-end items-end gap-1.5 w-full">
-                <div class="flex items-center gap-1 mr-1 mb-0.5">
-                  <div class="relative">
-                    <button onclick="toggleMessageMenu(${index})" title="더보기" class="p-1 rounded-lg text-slate-600 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 transition">
-                      <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
-                    </button>
-                    <div id="menu-${index}" class="hidden absolute right-0 bottom-6 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg p-1 z-30 w-24 text-[11px] font-medium">
-                      <button onclick="editMessageInline(${index})" class="w-full text-left px-2 py-1.5 hover:bg-[var(--fill-muted)] rounded flex items-center gap-1 text-[var(--ink)]">
-                        <i data-lucide="edit-2" class="w-3 h-3"></i> 수정
+        return `
+          <div class="flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-0.5 relative group">
+            <span class="text-[10px] ${isKakaoDark ? 'text-zinc-400' : 'text-slate-600'} font-medium px-1">
+              ${isUser ? escapeHtml(activePersona.name) : (char?.name || 'AI')} ${msg.bookmarked ? '⭐' : ''}
+            </span>
+            
+            <div class="flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-1.5 w-full">
+              ${!isUser ? `
+                <img src="${char?.avatar || DEFAULT_FALLBACK_AVATAR}" alt="avatar" class="w-9 h-9 rounded-full object-cover bg-slate-800 border border-black/10 shrink-0 cursor-pointer" onclick="openLightbox('${char?.avatar || DEFAULT_FALLBACK_AVATAR}')" onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" />
+              ` : ''}
+
+              <div class="flex items-start gap-1.5 max-w-[78%]">
+                ${isUser ? `
+                  <div class="flex items-center gap-1 mr-1 mt-0.5">
+                    <div class="relative">
+                      <button onclick="toggleMessageMenu(${index})" title="더보기" class="p-1 rounded-lg text-slate-600 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 transition">
+                        <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
                       </button>
-                      <button onclick="deleteMessage(${index})" class="w-full text-left px-2 py-1.5 hover:bg-rose-500/15 rounded flex items-center gap-1 text-rose-500">
-                        <i data-lucide="trash-2" class="w-3 h-3"></i> 삭제
-                      </button>
+                      <div id="menu-${index}" class="hidden absolute right-0 top-6 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg p-1 z-30 w-24 text-[11px] font-medium">
+                        <button onclick="editMessageInline(${index})" class="w-full text-left px-2 py-1.5 hover:bg-[var(--fill-muted)] rounded flex items-center gap-1 text-[var(--ink)]">
+                          <i data-lucide="edit-2" class="w-3 h-3"></i> 수정
+                        </button>
+                        <button onclick="deleteMessage(${index})" class="w-full text-left px-2 py-1.5 hover:bg-rose-500/15 rounded flex items-center gap-1 text-rose-500">
+                          <i data-lucide="trash-2" class="w-3 h-3"></i> 삭제
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ` : ''}
 
-                <div id="msg-bubble-${index}" class="relative px-3.5 py-2 rounded-2xl rounded-tr-[2px] text-[13px] leading-relaxed break-words shadow-sm bg-[#FEE500] text-slate-950 max-w-[78%]">
-                  <div id="content-container-${index}">
-                    ${msg.isEditing ? `
+                <div id="msg-bubble-${index}" class="flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-1">
+                  ${msg.image ? `
+                    <img src="${msg.image}" alt="첨부 이미지" class="max-w-[180px] rounded-2xl cursor-pointer block shadow-sm" onclick="openLightbox('${msg.image}')" />
+                  ` : ''}
+                  ${msg.isEditing ? `
+                    <div class="relative px-3.5 py-2 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${
+                      isUser
+                        ? 'bg-[#FEE500] text-slate-950 rounded-tr-none'
+                        : (isKakaoDark ? 'bg-[#2A2A2A] text-slate-100 border border-zinc-700/60 rounded-tl-none' : 'bg-white text-slate-950 rounded-tl-none')
+                    }">
                       <div class="space-y-2 min-w-[200px]">
                         <textarea id="edit-textarea-${index}" rows="2" class="w-full bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-xs p-2 rounded-lg border border-zinc-400 focus:outline-none resize-none">${escapeHtml(msg.content)}</textarea>
                         <div class="flex justify-end gap-1">
@@ -2127,67 +2411,25 @@
                           <button onclick="saveEditInline(${index})" class="px-2 py-1 text-[10px] bg-[var(--accent)] text-[var(--accent-text)] rounded font-bold">저장</button>
                         </div>
                       </div>
-                    ` : `
-                      <div id="content-${index}">
-                        ${msg.image ? `
-                          <img src="${msg.image}" alt="첨부 이미지" class="max-w-[180px] rounded-xl mb-1 cursor-pointer block" onclick="openLightbox('${msg.image}')" />
-                        ` : ''}
-                        ${displayContent ? escapeHtml(displayContent) : ''}
-                      </div>
-                    `}
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="flex items-start gap-2.5 w-full mb-1">
-              <img 
-                src="${char?.avatar || DEFAULT_FALLBACK_AVATAR}" 
-                alt="${char?.name || 'AI'}" 
-                class="w-10 h-10 rounded-[14px] object-cover bg-slate-800 border border-black/10 shrink-0 cursor-pointer shadow-sm mt-0.5" 
-                onclick="openLightbox('${char?.avatar || DEFAULT_FALLBACK_AVATAR}')" 
-                onerror="this.src='${DEFAULT_FALLBACK_AVATAR}'" 
-              />
-
-              <div class="flex flex-col items-start max-w-[78%] min-w-0">
-                <span class="text-[12px] ${isKakaoDark ? 'text-zinc-300' : 'text-slate-800'} font-medium mb-1 truncate">
-                  ${char?.name || 'AI'} ${msg.bookmarked ? '⭐' : ''}
-                </span>
-
-                <div class="flex items-end gap-1.5 w-full">
-                  <div id="msg-bubble-${index}" class="relative px-3.5 py-2.5 rounded-2xl rounded-tl-[2px] text-[13px] leading-relaxed break-words shadow-sm ${
-                    isKakaoDark 
-                      ? 'bg-[#2A2A2A] text-slate-100 border border-zinc-700/60' 
-                      : 'bg-white text-slate-950'
-                  }">
-                    <div id="content-container-${index}">
-                      ${msg.isEditing ? `
-                        <div class="space-y-2 min-w-[200px]">
-                          <textarea id="edit-textarea-${index}" rows="2" class="w-full bg-white dark:bg-zinc-800 text-slate-900 dark:text-white text-xs p-2 rounded-lg border border-zinc-400 focus:outline-none resize-none">${escapeHtml(msg.content)}</textarea>
-                          <div class="flex justify-end gap-1">
-                            <button onclick="cancelEdit(${index})" class="px-2 py-1 text-[10px] bg-zinc-300 dark:bg-zinc-700 rounded text-zinc-800 dark:text-zinc-200 font-bold">취소</button>
-                            <button onclick="saveEditInline(${index})" class="px-2 py-1 text-[10px] bg-[var(--accent)] text-[var(--accent-text)] rounded font-bold">저장</button>
-                          </div>
-                        </div>
-                      ` : `
-                        <div id="content-${index}">
-                          ${msg.image ? `
-                            <img src="${msg.image}" alt="첨부 이미지" class="max-w-[180px] rounded-xl mb-1 cursor-pointer block" onclick="openLightbox('${msg.image}')" />
-                          ` : ''}
-                          ${displayContent ? escapeHtml(displayContent) : ''}
-                        </div>
-                      `}
                     </div>
-                  </div>
+                  ` : (displayContent ? `
+                    <div class="relative px-3.5 py-2 rounded-2xl text-[13px] leading-relaxed break-words shadow-sm ${
+                      isUser
+                        ? 'bg-[#FEE500] text-slate-950 rounded-tr-none'
+                        : (isKakaoDark ? 'bg-[#2A2A2A] text-slate-100 border border-zinc-700/60 rounded-tl-none' : 'bg-white text-slate-950 rounded-tl-none')
+                    }">
+                      <div id="content-${index}">${escapeHtml(displayContent)}</div>
+                    </div>
+                  ` : '')}
+                </div>
 
-                  <div class="flex items-center gap-0.5 ml-0.5 mb-0.5 shrink-0">
+                ${!isUser ? `
+                  <div class="flex items-center gap-1 ml-1 mt-0.5">
                     <div class="relative">
                       <button onclick="toggleMessageMenu(${index})" title="더보기" class="p-1 rounded-lg text-slate-600 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 transition">
                         <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
                       </button>
-                      <div id="menu-${index}" class="hidden absolute left-0 bottom-6 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg p-1 z-30 w-24 text-[11px] font-medium">
+                      <div id="menu-${index}" class="hidden absolute left-0 top-6 bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-lg p-1 z-30 w-24 text-[11px] font-medium">
                         <button onclick="editMessageInline(${index})" class="w-full text-left px-2 py-1.5 hover:bg-[var(--fill-muted)] rounded flex items-center gap-1 text-[var(--ink)]">
                           <i data-lucide="edit-2" class="w-3 h-3"></i> 수정
                         </button>
@@ -2206,23 +2448,23 @@
                       </button>
                     ` : ''}
                   </div>
-                </div>
-
-                ${variants.length > 1 ? `
-                  <div class="flex items-center gap-1 mt-1 text-[10px] font-mono ${isKakaoDark ? 'text-zinc-500' : 'text-slate-500'}">
-                    <button onclick="prevVariant(${index})" title="이전 응답" class="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition">
-                      <i data-lucide="chevron-left" class="w-3 h-3"></i>
-                    </button>
-                    <span>${activeVariantIdx + 1}/${variants.length}</span>
-                    <button onclick="nextVariant(${index})" title="다음 응답" class="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition">
-                      <i data-lucide="chevron-right" class="w-3 h-3"></i>
-                    </button>
-                  </div>
                 ` : ''}
               </div>
             </div>
-          `;
-        }
+
+            ${!isUser && variants.length > 1 ? `
+              <div class="flex items-center gap-1 pl-11 mt-0.5 text-[10px] font-mono ${isKakaoDark ? 'text-zinc-500' : 'text-slate-500'}">
+                <button onclick="prevVariant(${index})" title="이전 응답" class="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition">
+                  <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                </button>
+                <span>${activeVariantIdx + 1}/${variants.length}</span>
+                <button onclick="nextVariant(${index})" title="다음 응답" class="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition">
+                  <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
       }).join('');
 
       scrollToBottom();
@@ -2402,13 +2644,14 @@
 
       const session = getCurrentSession();
       const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
-      const char = chars.find(c => c.id === session?.characterId);
+      let char = chars.find(c => c.id === session?.characterId);
       if (!char) return;
+      char = { ...char, startContext: (session && session.startContext) || char.startContext };
 
       const container = document.getElementById('kakao-messages');
       const typingIndicator = document.createElement('div');
       typingIndicator.id = 'typing-indicator';
-      typingIndicator.className = 'flex items-center gap-2 text-xs text-slate-500 pl-12 animate-pulse';
+      typingIndicator.className = 'flex items-center gap-2 text-xs text-slate-500 pl-11 animate-pulse';
       typingIndicator.innerText = `${char.name} 다시 생각 중...`;
       container.appendChild(typingIndicator);
       scrollToBottom();
@@ -2459,8 +2702,9 @@
 
  const session = getCurrentSession();
  const chars = JSON.parse(localStorage.getItem('crack_characters') || '[]');
- const char = chars.find(c => c.id === session?.characterId);
+ let char = chars.find(c => c.id === session?.characterId);
  if (!char) return;
+ char = { ...char, startContext: (session && session.startContext) || char.startContext };
 
  const userTime = getCurrentTime();
  const messages = JSON.parse(localStorage.getItem(`chat_history_${currentSessionId}`) || '[]');
@@ -2482,7 +2726,7 @@
  const container = document.getElementById('kakao-messages');
  const typingIndicator = document.createElement('div');
  typingIndicator.id = 'typing-indicator';
- typingIndicator.className = 'flex items-center gap-2 text-xs text-slate-500 pl-12 animate-pulse';
+ typingIndicator.className = 'flex items-center gap-2 text-xs text-slate-500 pl-11 animate-pulse';
  typingIndicator.innerText = `${char.name} 입력 중...`;
  container.appendChild(typingIndicator);
  scrollToBottom();
@@ -2593,7 +2837,7 @@
  localStorage.setItem('user_registered_models', JSON.stringify(models));
  }
 
- // ---- 기억(요약) 시스템 (10턴당 한 번) ----
+ // ---- 기억(요약) 시스템 ----
  const MEMORY_SUMMARIZE_THRESHOLD = 10;
  const MEMORY_KEEP_RAW = 5;
 
@@ -2683,7 +2927,7 @@
 
  countEl.innerText = `원문 유지 ${Math.min(messages.length, MEMORY_KEEP_RAW + Math.max(0, messages.length - memory.summarizedUpToIndex - MEMORY_KEEP_RAW))}개 · 요약 반영 ${memory.summarizedUpToIndex}개`;
  updatedEl.innerText = memory.updatedAt ? `마지막 업데이트: ${memory.updatedAt}` : '아직 요약된 적 없음';
- textEl.innerText = memory.summary || '아직 저장된 기억 요약이 없어요. 대화가 10개 메시지를 넘으면 자동으로 생성됩니다.';
+ textEl.innerText = memory.summary || '아직 저장된 기억 요약이 없어요. 대화가 20개 메시지를 넘으면 자동으로 생성됩니다.';
  }
 
  async function forceSummarizeNow() {
